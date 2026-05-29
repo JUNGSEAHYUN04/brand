@@ -12,11 +12,8 @@ export default function ResultPage() {
   const router = useRouter()
   const { status, partialData, brandData, reset } = useBrandStore()
 
-  // 생성 안 하고 직접 접근하면 폼으로 리다이렉트
   useEffect(() => {
-    if (status === 'idle') {
-      router.push('/create')
-    }
+    if (status === 'idle') router.push('/create')
   }, [status, router])
 
   const isLoading = status === 'loading'
@@ -27,9 +24,9 @@ export default function ResultPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-        <span className="text-lg font-bold tracking-tight">brandkit</span>
-        <div className="flex items-center gap-4">
+      <header className="bg-white border-b border-gray-100 px-6 md:px-8 py-4 flex items-center justify-between">
+        <span className="text-sm font-semibold text-gray-900">brandkit</span>
+        <div className="flex items-center gap-3 md:gap-4">
           {isComplete ? (
             <span className="text-xs text-green-600 font-medium flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
@@ -43,14 +40,14 @@ export default function ResultPage() {
           )}
           <button
             onClick={() => { reset(); router.push('/create') }}
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            className="text-xs md:text-sm text-gray-500 hover:text-gray-900 transition-colors"
           >
             ← 다시 만들기
           </button>
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-8 py-12">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
         {/* 로딩 상태 */}
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-32">
@@ -60,16 +57,15 @@ export default function ResultPage() {
           </div>
         )}
 
-        {/* 요약 카드 4개 */}
         {isSummaryReady && (
           <>
             {/* 브랜드명 */}
             {data.brand && (
-              <div className="mb-10 text-center">
+              <div className="mb-8 md:mb-10 text-center">
                 <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Brand Identity</p>
-                <h1 className="text-4xl font-bold text-gray-950 mb-2">{data.brand.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-950 mb-2">{data.brand.name}</h1>
                 {data.brand.nameCandidates && (
-                  <div className="flex items-center justify-center gap-2 mt-3">
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
                     <p className="text-xs text-gray-400">후보 브랜드명:</p>
                     {data.brand.nameCandidates.map((name) => (
                       <span key={name} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
@@ -81,10 +77,10 @@ export default function ResultPage() {
               </div>
             )}
 
-            {/* 4개 카드 그리드 */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            {/* 카드 그리드 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {/* 로고 */}
-              <div className="col-span-2">
+              <div className="col-span-1 md:col-span-2">
                 {data.logo ? (
                   <LogoCard logo={data.logo} />
                 ) : (
@@ -107,7 +103,7 @@ export default function ResultPage() {
               )}
 
               {/* 폰트 */}
-              <div className="col-span-2">
+              <div className="col-span-1 md:col-span-2">
                 {data.typography ? (
                   <FontCard typography={data.typography} colors={data.colors} />
                 ) : (
@@ -138,7 +134,6 @@ export default function ResultPage() {
   )
 }
 
-// 스켈레톤 카드
 function SkeletonCard({ label, height }: { label: string; height: string }) {
   return (
     <div className={`${height} bg-white border border-gray-100 rounded-2xl p-5 flex flex-col justify-between animate-pulse`}>

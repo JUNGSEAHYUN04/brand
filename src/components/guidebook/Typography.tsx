@@ -69,7 +69,7 @@ export default function Typography({ typography, colors }: Props) {
               </p>
               <p className="text-xs font-medium text-gray-700 mb-1">{font}</p>
               <p
-                className="text-xs text-gray-400"
+                className="text-xs text-gray-400 break-all"
                 style={{ fontFamily: font }}
               >
                 ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />

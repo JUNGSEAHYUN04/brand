@@ -19,6 +19,7 @@ export default function GuidebookPage() {
   const router = useRouter()
   const { brandData, status, reset } = useBrandStore()
   const [activeSection, setActiveSection] = useState('colors')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     if (status === 'idle') router.push('/create')
@@ -32,22 +33,22 @@ export default function GuidebookPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* 헤더 */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-6 md:px-8 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3 md:gap-6">
           <span className="text-sm font-semibold text-gray-900">brandkit</span>
-          <div className="w-px h-4 bg-gray-200" />
-          <span className="text-sm text-gray-400">{brand.name}</span>
+          <div className="hidden md:block w-px h-4 bg-gray-200" />
+          <span className="hidden md:block text-sm text-gray-400">{brand.name}</span>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/result')}
-            className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
+            className="text-xs md:text-sm text-gray-400 hover:text-gray-700 transition-colors"
           >
             ← 요약으로
           </button>
           <button
             onClick={() => { reset(); router.push('/create') }}
-            className="text-sm px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:border-gray-400 transition-colors"
+            className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 border border-gray-200 text-gray-600 rounded-lg hover:border-gray-400 transition-colors"
           >
             다시 만들기
           </button>
@@ -55,15 +56,13 @@ export default function GuidebookPage() {
       </header>
 
       <div className="flex flex-1">
-        {/* 사이드 네비 */}
-        <aside className="w-56 shrink-0 border-r border-gray-100 py-8 px-4 sticky top-[57px] h-[calc(100vh-57px)]">
-          {/* 브랜드명 + 슬로건 */}
+        {/* 사이드 네비 — 데스크탑만 */}
+        <aside className="hidden md:flex w-56 shrink-0 border-r border-gray-100 py-8 px-4 sticky top-[57px] h-[calc(100vh-57px)] flex-col">
           <div className="mb-8 px-2">
             <p className="text-sm font-semibold text-gray-900 mb-1">{brand.name}</p>
             <p className="text-xs text-gray-400 leading-relaxed">{brand.slogan.ko}</p>
           </div>
 
-          {/* 섹션 네비 */}
           <nav className="space-y-0.5">
             {SECTIONS.map((section) => (
               <button
@@ -81,7 +80,6 @@ export default function GuidebookPage() {
             ))}
           </nav>
 
-          {/* 로고 미리보기 */}
           <div className="mt-8 px-2">
             <p className="text-xs text-gray-400 mb-3">Logo</p>
             <div
@@ -91,26 +89,62 @@ export default function GuidebookPage() {
           </div>
         </aside>
 
-        {/* 메인 콘텐츠 */}
-        <main className="flex-1 px-12 py-10 max-w-4xl">
-          {/* 브랜드 소개 */}
+        {/* 모바일 섹션 탭 */}
+        <div className="md:hidden w-full">
+          <div className="flex overflow-x-auto border-b border-gray-100 bg-white sticky top-[57px] z-10">
+            {SECTIONS.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`shrink-0 px-4 py-3 text-sm transition-all border-b-2
+                  ${activeSection === section.id
+                    ? 'border-gray-950 text-gray-950 font-medium'
+                    : 'border-transparent text-gray-400'
+                  }
+                `}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 모바일 메인 콘텐츠 */}
+          <main className="px-4 py-8">
+            <div className="mb-8 pb-6 border-b border-gray-100">
+              <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Brand Identity</p>
+              <h1 className="text-2xl font-bold text-gray-950 mb-3">{brand.name}</h1>
+              <p className="text-gray-400 text-sm leading-relaxed mb-4">{brand.tone}</p>
+              <div className="flex flex-wrap gap-2">
+                {brand.personality.map((keyword) => (
+                  <span key={keyword} className="text-xs px-3 py-1 border border-gray-200 text-gray-500 rounded-full">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {activeSection === 'colors' && <ColorSystem colors={colors} />}
+            {activeSection === 'typography' && <Typography typography={typography} colors={colors} />}
+            {activeSection === 'spacing' && <Spacing spacing={spacing} />}
+            {activeSection === 'components' && <ComponentKit components={components} colors={colors} typography={typography} />}
+          </main>
+        </div>
+
+        {/* 데스크탑 메인 콘텐츠 */}
+        <main className="hidden md:block flex-1 px-12 py-10 max-w-4xl">
           <div className="mb-12 pb-10 border-b border-gray-100">
             <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Brand Identity</p>
             <h1 className="text-3xl font-bold text-gray-950 mb-3">{brand.name}</h1>
             <p className="text-gray-400 text-sm leading-relaxed mb-4">{brand.tone}</p>
             <div className="flex flex-wrap gap-2">
               {brand.personality.map((keyword) => (
-                <span
-                  key={keyword}
-                  className="text-xs px-3 py-1 border border-gray-200 text-gray-500 rounded-full"
-                >
+                <span key={keyword} className="text-xs px-3 py-1 border border-gray-200 text-gray-500 rounded-full">
                   {keyword}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* 섹션 콘텐츠 */}
           {activeSection === 'colors' && <ColorSystem colors={colors} />}
           {activeSection === 'typography' && <Typography typography={typography} colors={colors} />}
           {activeSection === 'spacing' && <Spacing spacing={spacing} />}
