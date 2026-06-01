@@ -44,12 +44,15 @@ export default function StepIndustry() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <p className="text-sm text-gray-400 mb-1">Step 2 of 5</p>
-        <h1 className="text-2xl font-bold text-gray-950 mb-2">업종</h1>
-        <p className="text-gray-500 text-sm">
-          브랜드가 속한 업종을 선택하세요.
-        </p>
-      </div>
+  <div className="flex items-center gap-2 mb-1">
+    <p className="text-sm text-gray-400">Step 2 of 3</p>
+    <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-400 rounded-full">선택</span>
+  </div>
+  <h1 className="text-2xl font-bold text-gray-950 mb-2">업종</h1>
+  <p className="text-gray-500 text-sm">
+    브랜드가 속한 업종을 선택하세요. 없으면 건너뛰어도 돼요.
+  </p>
+</div>
 
       {/* 업종 그리드 */}
       <div className="grid grid-cols-2 gap-2 mb-4">

@@ -21,15 +21,15 @@ export default function StepBrandName() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <p className="text-sm text-gray-400">Step 5 of 5</p>
-          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-400 rounded-full">선택</span>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-950 mb-2">브랜드명</h1>
-        <p className="text-gray-500 text-sm">
-          이미 브랜드명이 있다면 입력하세요. 없으면 건너뛰어도 돼요 — AI가 키워드를 바탕으로 제안해드려요.
-        </p>
-      </div>
+  <div className="flex items-center gap-2 mb-1">
+    <p className="text-sm text-gray-400">Step 3 of 3</p>
+    <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-400 rounded-full">선택</span>
+  </div>
+  <h1 className="text-2xl font-bold text-gray-950 mb-2">브랜드명</h1>
+  <p className="text-gray-500 text-sm">
+    이미 브랜드명이 있다면 입력하세요. 없으면 건너뛰어도 돼요 — AI가 키워드를 바탕으로 제안해드려요.
+  </p>
+</div>
 
       {/* 입력 필드 */}
       <div className="mb-6">

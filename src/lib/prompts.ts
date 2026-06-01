@@ -13,7 +13,10 @@ export const getSystemPrompt = () => `
    - 예시(영문): Inter, Playfair Display, Montserrat, DM Sans, Space Grotesk, JetBrains Mono
 4. 로고는 반드시 가로형(landscape) SVG로 생성하세요 (viewBox="0 0 320 80" 기준)
 5. 로고 색상은 최소 2가지 이상 사용하고, 그라디언트도 허용합니다
-6. 톤앤매너를 모든 결정의 기준으로 삼으세요
+6. 브랜드 키워드를 분석해서 톤앤매너, 컬러, 폰트 등 모든 요소를 자동으로 결정하세요
+7. WCAG 2.1 접근성 기준을 준수하세요 — 텍스트와 배경 간 명도 대비 4.5:1 이상
+8. 컬러 조합은 색상 이론(보색, 유사색, 삼각배색 등)을 기반으로 조화롭게 선택하세요
+9. 폰트 조합은 Heading과 Body가 서로 대비되면서도 조화로운 쌍으로 선택하세요
 `
 
 export const getUserPrompt = (values: FormValues) => `
@@ -23,25 +26,27 @@ export const getUserPrompt = (values: FormValues) => `
 브랜드명: ${
   values.brandName
     ? `"${values.brandName}"`
-    : '없음 — 아래 정보를 바탕으로 브랜드명 후보 3개를 제안하고, 가장 적합한 1개를 선택해 가이드북을 생성하세요'
+    : '없음 — 아래 키워드를 바탕으로 브랜드명 후보 3개를 제안하고, 가장 적합한 1개를 선택해 가이드북을 생성하세요'
 }
 브랜드 키워드: ${values.keywords.join(', ')}
-업종: ${values.industry}
-타겟 고객: ${values.targetAudience}
-톤앤매너: ${values.tone}
+업종: ${values.industry ? values.industry : '미지정 — 키워드를 바탕으로 가장 적합한 업종을 추론하세요'}
+
+=== 톤앤매너 자동 결정 규칙 ===
+- 브랜드 키워드를 분석해서 톤앤매너를 자동으로 결정하세요
+- 키워드의 감성, 분위기, 연상 이미지를 종합적으로 판단하세요
+  예시: "자연, 친환경, 따뜻함" → 따뜻하고 유기적인 톤
+        "혁신, 테크, 미래" → 모던하고 미니멀한 톤
+        "럭셔리, 고급, 프리미엄" → 우아하고 세련된 톤
+        "활발, 젊은, 트렌디" → 밝고 역동적인 톤
 
 === 슬로건 규칙 ===
 - 한글 버전과 영어 버전 각각 1개씩 생성
 - 각각 5단어(단어 기준) 이내
-- 톤앤매너에 맞는 스타일로 작성
-  예시: 톤이 "감성적/따뜻한" → 시적이고 감성적인 슬로건
-        톤이 "전문적/신뢰감" → 직관적이고 명확한 슬로건
-        톤이 "유쾌한/위트있는" → 재치있고 기억에 남는 슬로건
-        톤이 "강렬한/임팩트" → 짧고 강렬한 슬로건
+- 키워드에서 추론된 톤앤매너에 맞는 스타일로 작성
 
 === 로고 SVG 규칙 ===
 - 반드시 가로형 레이아웃 (viewBox="0 0 320 80")
-- 톤앤매너에 따라 아래 3가지 스타일 중 1개 선택:
+- 키워드 톤앤매너에 따라 아래 3가지 스타일 중 1개 선택:
   · wordmark: 브랜드명 전체를 타이포그래피로 표현 (미니멀/모던 톤에 적합)
   · lettermark: 브랜드명 이니셜 1~2자를 심볼화 (고급스러운/전문적 톤에 적합)
   · symbol+wordmark: 기하학적 심볼 + 브랜드명 텍스트 조합 (친근한/역동적 톤에 적합)
@@ -54,8 +59,8 @@ export const getUserPrompt = (values: FormValues) => `
 
 === 컬러 규칙 ===
 - Primary, Secondary, Accent 3가지 반드시 생성
-- 업종 특성과 톤앤매너를 동시에 고려해서 결정
-  예시: 의료+신뢰감 → 청록/파랑 계열 / 푸드+따뜻함 → 오렌지/레드 계열
+- 키워드에서 추론된 업종 특성과 톤앤매너를 동시에 고려해서 결정
+- WCAG 2.1 기준 — Primary 컬러는 흰 배경에서 명도 대비 4.5:1 이상 확보
 - 각 색상마다 "어디에 주로 쓰이는지" usage 설명 포함
 - Neutral 팔레트는 Primary 컬러와 어울리는 톤으로 생성 (완전한 무채색 지양)
 - Semantic 컬러(success/error/warning/info)는 범용적인 색상으로 생성
@@ -65,7 +70,7 @@ export const getUserPrompt = (values: FormValues) => `
 - 반드시 Google Fonts에 실제 존재하는 폰트명만 사용
 - 브랜드명에 한글이 포함되어 있으면 한글을 지원하는 폰트 우선 선택
 - Heading과 Body는 서로 대비되는 조합으로 선택 (예: Serif Heading + Sans Body)
-- 톤앤매너에 맞는 폰트 선택
+- 키워드 톤앤매너에 맞는 폰트 선택
   예시: 고급스러운 → Playfair Display / 모던한 → Inter / 친근한 → Nunito
 
 === 출력 JSON 구조 ===
@@ -120,7 +125,7 @@ export const getUserPrompt = (values: FormValues) => `
       "bodyM": { "size": 16, "weight": 400, "lineHeight": 1.6 },
       "bodyS": { "size": 14, "weight": 400, "lineHeight": 1.5 },
       "caption": { "size": 12, "weight": 400, "lineHeight": 1.4 },
-      "label": { "size": 12, "weight": 500, "letterSpacing": "0.08em" }
+      "label": { "size": 12, "weight": 500, "lineHeight": 1.4, "letterSpacing": "0.08em" }
     }
   },
   "spacing": {

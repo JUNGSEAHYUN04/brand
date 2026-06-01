@@ -22,8 +22,6 @@ const initialFormValues: FormValues = {
   brandName: '',
   keywords: [],
   industry: '',
-  targetAudience: '',
-  tone: '',
 }
 
 const DUMMY_DATA: BrandIdentity = {

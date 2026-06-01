@@ -151,9 +151,7 @@ export interface PartialBrandIdentity {
 export interface FormValues {
   brandName?: string
   keywords: string[]
-  industry: string
-  targetAudience: string
-  tone: string
+  industry?: string
 }
 
 // 생성 상태

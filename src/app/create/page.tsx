@@ -5,16 +5,12 @@ import { useRouter } from 'next/navigation'
 import { useBrandStore } from '@/store/brand-store'
 import StepKeyword from '@/components/form/StepKeyword'
 import StepIndustry from '@/components/form/StepIndustry'
-import StepTarget from '@/components/form/StepTarget'
-import StepTone from '@/components/form/StepTone'
 import StepBrandName from '@/components/form/StepBrandName'
 
 const STEPS = [
   { id: 1, key: 'keyword', label: '브랜드 키워드' },
-  { id: 2, key: 'industry', label: '업종' },
-  { id: 3, key: 'target', label: '타겟 고객' },
-  { id: 4, key: 'tone', label: '톤앤매너' },
-  { id: 5, key: 'brandName', label: '브랜드명', optional: true },
+  { id: 2, key: 'industry', label: '업종', optional: true },
+  { id: 3, key: 'brandName', label: '브랜드명', optional: true },
 ]
 
 export default function CreatePage() {
@@ -141,9 +137,7 @@ export default function CreatePage() {
           <div className="mb-10">
             {currentStep === 1 && <StepKeyword />}
             {currentStep === 2 && <StepIndustry />}
-            {currentStep === 3 && <StepTarget />}
-            {currentStep === 4 && <StepTone />}
-            {currentStep === 5 && <StepBrandName />}
+            {currentStep === 3 && <StepBrandName />}
           </div>
 
           {/* 하단 버튼 */}
@@ -158,7 +152,8 @@ export default function CreatePage() {
             </button>
 
             <div className="flex gap-3">
-              {isLastStep && (
+              {/* 2, 3스텝은 스킵 가능 */}
+              {currentStep > 1 && (
                 <button
                   onClick={handleNext}
                   className="px-5 py-2.5 text-sm text-gray-400 hover:text-gray-700 transition-colors"
@@ -166,6 +161,7 @@ export default function CreatePage() {
                   건너뛰기
                 </button>
               )}
+
               {isLastStep ? (
                 <button
                   onClick={handleGenerate}

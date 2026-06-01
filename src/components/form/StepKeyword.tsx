@@ -41,12 +41,12 @@ export default function StepKeyword() {
     <div>
       {/* 헤더 */}
       <div className="mb-8">
-        <p className="text-sm text-gray-400 mb-1">Step 1 of 5</p>
-        <h1 className="text-2xl font-bold text-gray-950 mb-2">브랜드 키워드</h1>
-        <p className="text-gray-500 text-sm">
-          브랜드를 표현하는 키워드를 입력하세요. 최대 5개까지 추가할 수 있어요.
-        </p>
-      </div>
+  <p className="text-sm text-gray-400 mb-1">Step 1 of 3</p>
+  <h1 className="text-2xl font-bold text-gray-950 mb-2">브랜드 키워드</h1>
+  <p className="text-gray-500 text-sm">
+    브랜드를 표현하는 키워드를 입력하세요. 최대 5개까지 추가할 수 있어요.
+  </p>
+</div>
 
       {/* 키워드 입력 */}
       <div className="mb-6">
