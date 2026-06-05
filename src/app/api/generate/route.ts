@@ -1,46 +1,39 @@
 import { NextRequest } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getSystemPrompt, getUserPrompt } from '@/lib/prompts'
 import { FormValues } from '@/lib/types'
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function POST(req: NextRequest) {
   try {
     const body: FormValues = await req.json()
 
-    if (!body.keywords?.length || !body.industry || !body.targetAudience || !body.tone) {
-      return new Response(JSON.stringify({ error: '필수 입력값이 누락되었습니다.' }), {
+    if (!body.keywords?.length) {
+      return new Response(JSON.stringify({ error: '키워드를 입력해주세요.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    const stream = await client.messages.stream({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8096,
-      system: getSystemPrompt(),
-      messages: [
-        {
-          role: 'user',
-          content: getUserPrompt(body),
-        },
-      ],
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-3.1-flash-lite',
+      systemInstruction: getSystemPrompt(),
+      generationConfig: {
+        maxOutputTokens: 2048,
+        temperature: 0.7,
+      },
     })
+
+    const result = await model.generateContentStream(getUserPrompt(body))
 
     const readable = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
-            if (
-              chunk.type === 'content_block_delta' &&
-              chunk.delta.type === 'text_delta'
-            ) {
-              // UTF-8로 직접 인코딩
-              const bytes = new TextEncoder().encode(chunk.delta.text)
-              controller.enqueue(bytes)
+          for await (const chunk of result.stream) {
+            const text = chunk.text()
+            if (text) {
+              controller.enqueue(new TextEncoder().encode(text))
             }
           }
           controller.close()

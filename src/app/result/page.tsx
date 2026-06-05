@@ -79,14 +79,25 @@ export default function ResultPage() {
 
             {/* 카드 그리드 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              {/* 로고 */}
-              <div className="col-span-1 md:col-span-2">
-                {data.logo ? (
-                  <LogoCard logo={data.logo} />
-                ) : (
-                  <SkeletonCard label="로고" height="h-40" />
-                )}
+            {/* 로고 — 아직 생성 전 스켈레톤 */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="bg-white border border-gray-100 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Logo</p>
+                    <p className="text-xs text-gray-300">Coming soon</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center justify-center bg-gray-50 rounded-xl h-32">
+                    <p className="text-xs text-gray-300">로고 생성 예정</p>
+                  </div>
+                  <div className="flex items-center justify-center bg-gray-950 rounded-xl h-32">
+                    <p className="text-xs text-gray-600">로고 생성 예정</p>
+                  </div>
+                </div>
               </div>
+            </div>
 
               {/* 컬러 */}
               {data.colors ? (

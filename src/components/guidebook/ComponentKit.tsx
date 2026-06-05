@@ -1,28 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { Components, Colors, Typography } from '@/lib/types'
+import { Colors, Typography } from '@/lib/types'
+import { buildDesignSystem } from '@/lib/component-tokens'
 
 interface Props {
-  components: Components
   colors: Colors
   typography: Typography
 }
 
-export default function ComponentKit({ components, colors, typography }: Props) {
-  const [checkboxStates, setCheckboxStates] = useState({
-    checked: true,
-    unchecked: false,
-    indeterminate: false,
-    disabled: false,
-  })
+export default function ComponentKit({ colors, typography }: Props) {
+  const { component, foundation } = buildDesignSystem(colors, typography)
+  const { button, input, checkbox, radio, badge, tag, accordion, breadcrumb, card } = component
+  const fonts = foundation.typography.fonts
+
   const [radioSelected, setRadioSelected] = useState('option1')
   const [accordionOpen, setAccordionOpen] = useState<string | null>('item1')
   const [inputValue, setInputValue] = useState('')
-
-  const primary = colors.primary.hex
-  const secondary = colors.secondary.hex
-  const { fonts } = typography
 
   return (
     <div>
@@ -35,34 +29,32 @@ export default function ComponentKit({ components, colors, typography }: Props) 
       <section className="mb-12">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Button</p>
         <div className="p-6 border border-gray-100 rounded-xl space-y-6">
+
           {/* Variants */}
           <div>
             <p className="text-xs text-gray-400 mb-3">Variants</p>
             <div className="flex flex-wrap gap-3">
-              <button
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-opacity hover:opacity-90"
-                style={{ backgroundColor: primary, fontFamily: fonts.body }}
-              >
-                Primary
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium rounded-lg border transition-opacity hover:opacity-80"
-                style={{ color: primary, borderColor: primary, fontFamily: fonts.body }}
-              >
-                Secondary
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-gray-50"
-                style={{ color: primary, fontFamily: fonts.body }}
-              >
-                Ghost
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg transition-opacity hover:opacity-90"
-                style={{ backgroundColor: colors.semantic.error, fontFamily: fonts.body }}
-              >
-                Danger
-              </button>
+              {(['primary', 'secondary', 'ghost', 'danger'] as const).map((variant) => {
+                const s = button[variant].default
+                return (
+                  <button
+                    key={variant}
+                    className="text-sm font-medium transition-all"
+                    style={{
+                      height: `${button.sizes.md.height}px`,
+                      padding: `0 ${button.sizes.md.paddingX}px`,
+                      fontSize: `${button.sizes.md.fontSize}px`,
+                      borderRadius: `${button.sizes.md.borderRadius}px`,
+                      backgroundColor: s.bg,
+                      color: s.text,
+                      border: s.border === 'transparent' ? 'none' : `1px solid ${s.border}`,
+                      fontFamily: fonts.body,
+                    }}
+                  >
+                    {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -70,21 +62,28 @@ export default function ComponentKit({ components, colors, typography }: Props) 
           <div>
             <p className="text-xs text-gray-400 mb-3">Sizes</p>
             <div className="flex flex-wrap items-center gap-3">
-              {Object.entries(components.button.sizes).map(([size, spec]) => (
-                <button
-                  key={size}
-                  className="font-medium text-white rounded-lg transition-opacity hover:opacity-90"
-                  style={{
-                    height: `${spec.height}px`,
-                    padding: `0 ${spec.paddingX}px`,
-                    fontSize: `${spec.fontSize}px`,
-                    backgroundColor: primary,
-                    fontFamily: fonts.body,
-                  }}
-                >
-                  {size.toUpperCase()}
-                </button>
-              ))}
+              {(['sm', 'md', 'lg'] as const).map((size) => {
+                const s = button.sizes[size]
+                const d = button.primary.default
+                return (
+                  <button
+                    key={size}
+                    className="font-medium"
+                    style={{
+                      height: `${s.height}px`,
+                      padding: `0 ${s.paddingX}px`,
+                      fontSize: `${s.fontSize}px`,
+                      borderRadius: `${s.borderRadius}px`,
+                      backgroundColor: d.bg,
+                      color: d.text,
+                      border: 'none',
+                      fontFamily: fonts.body,
+                    }}
+                  >
+                    {size.toUpperCase()}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -92,34 +91,44 @@ export default function ComponentKit({ components, colors, typography }: Props) 
           <div>
             <p className="text-xs text-gray-400 mb-3">States</p>
             <div className="flex flex-wrap gap-3">
+              {([ 
+                { label: 'Default',  token: button.primary.default },
+                { label: 'Hover',    token: button.primary.hover },
+                { label: 'Pressed',  token: button.primary.pressed },
+                { label: 'Disabled', token: button.primary.disabled },
+              ] as const).map(({ label, token }) => (
+                <button
+                  key={label}
+                  className="text-sm font-medium"
+                  style={{
+                    height: `${button.sizes.md.height}px`,
+                    padding: `0 ${button.sizes.md.paddingX}px`,
+                    fontSize: `${button.sizes.md.fontSize}px`,
+                    borderRadius: `${button.sizes.md.borderRadius}px`,
+                    backgroundColor: (token as any).bg,
+                    color: (token as any).text,
+                    border: (token as any).border === 'transparent' ? 'none' : `1px solid ${(token as any).border}`,
+                    fontFamily: fonts.body,
+                    opacity: (token as any).opacity ?? 1,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+              {/* Loading */}
               <button
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg"
-                style={{ backgroundColor: primary, fontFamily: fonts.body }}
-              >
-                Default
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg opacity-80"
-                style={{ backgroundColor: primary, fontFamily: fonts.body }}
-              >
-                Hover
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg opacity-60"
-                style={{ backgroundColor: primary, fontFamily: fonts.body }}
-              >
-                Active
-              </button>
-              <button
-                disabled
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg opacity-30 cursor-not-allowed"
-                style={{ backgroundColor: primary, fontFamily: fonts.body }}
-              >
-                Disabled
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium text-white rounded-lg flex items-center gap-2"
-                style={{ backgroundColor: primary, fontFamily: fonts.body }}
+                className="text-sm font-medium flex items-center gap-2"
+                style={{
+                  height: `${button.sizes.md.height}px`,
+                  padding: `0 ${button.sizes.md.paddingX}px`,
+                  fontSize: `${button.sizes.md.fontSize}px`,
+                  borderRadius: `${button.sizes.md.borderRadius}px`,
+                  backgroundColor: button.primary.loading.bg,
+                  color: button.primary.loading.text,
+                  border: 'none',
+                  fontFamily: fonts.body,
+                  opacity: button.primary.loading.opacity,
+                }}
               >
                 <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Loading
@@ -133,99 +142,68 @@ export default function ComponentKit({ components, colors, typography }: Props) 
       <section className="mb-12">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Text Input</p>
         <div className="p-6 border border-gray-100 rounded-xl space-y-4">
-          {/* Default */}
-          <div>
-            <label className="text-xs text-gray-400 block mb-1.5">Default</label>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="텍스트를 입력하세요"
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none transition-colors"
-              style={{ fontFamily: fonts.body }}
-            />
-          </div>
-
-          {/* Focus */}
-          <div>
-            <label className="text-xs text-gray-400 block mb-1.5">Focus</label>
-            <input
-              type="text"
-              placeholder="포커스 상태"
-              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-              style={{
-                fontFamily: fonts.body,
-                border: `2px solid ${primary}`,
-              }}
-            />
-          </div>
-
-          {/* Error */}
-          <div>
-            <label className="text-xs text-gray-400 block mb-1.5">Error</label>
-            <input
-              type="text"
-              defaultValue="잘못된 입력값"
-              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
-              style={{
-                fontFamily: fonts.body,
-                border: `1.5px solid ${colors.semantic.error}`,
-              }}
-            />
-            <p className="text-xs mt-1" style={{ color: colors.semantic.error }}>
-              올바른 값을 입력해주세요
-            </p>
-          </div>
-
-          {/* Disabled */}
-          <div>
-            <label className="text-xs text-gray-400 block mb-1.5">Disabled</label>
-            <input
-              type="text"
-              disabled
-              defaultValue="비활성화 상태"
-              className="w-full px-3 py-2.5 border border-gray-100 rounded-lg text-sm bg-gray-50 text-gray-300 cursor-not-allowed"
-              style={{ fontFamily: fonts.body }}
-            />
-          </div>
+          {([ 
+            { label: 'Default',  token: input.default },
+            { label: 'Focus',    token: input.focus },
+            { label: 'Error',    token: input.error },
+            { label: 'Success',  token: input.success },
+            { label: 'Disabled', token: input.disabled },
+          ] as const).map(({ label, token }) => (
+            <div key={label}>
+              <p className="text-xs text-gray-400 mb-1.5">{label}</p>
+              <input
+                type="text"
+                placeholder={`${label} 상태`}
+                disabled={label === 'Disabled'}
+                className="w-full outline-none transition-all"
+                style={{
+                  height: `${input.sizes.md.height}px`,
+                  padding: `0 ${input.sizes.md.paddingX}px`,
+                  fontSize: `${input.sizes.md.fontSize}px`,
+                  borderRadius: `${input.sizes.md.borderRadius}px`,
+                  backgroundColor: (token as any).bg,
+                  color: (token as any).text,
+                  border: `1.5px solid ${(token as any).border}`,
+                  boxShadow: (token as any).shadow ?? 'none',
+                  fontFamily: fonts.body,
+                }}
+              />
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Checkbox & Radio */}
       <section className="mb-12">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Checkbox & Radio</p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
           {/* Checkbox */}
           <div className="p-6 border border-gray-100 rounded-xl">
             <p className="text-xs text-gray-400 mb-4">Checkbox</p>
             <div className="space-y-3">
-              {[
-                { label: 'Checked', key: 'checked', checked: true },
-                { label: 'Unchecked', key: 'unchecked', checked: false },
-                { label: 'Disabled', key: 'disabled', checked: false, disabled: true },
-              ].map((item) => (
+              {([
+                { label: 'Checked',       token: checkbox.checked,   checked: true },
+                { label: 'Unchecked',     token: checkbox.unchecked, checked: false },
+                { label: 'Disabled',      token: checkbox.disabled,  checked: false },
+              ] as const).map((item) => (
                 <label key={item.label} className="flex items-center gap-3 cursor-pointer">
                   <div
-                    className="w-4 h-4 rounded flex items-center justify-center border transition-colors shrink-0"
+                    className="w-4 h-4 rounded flex items-center justify-center border shrink-0"
                     style={{
-                      backgroundColor: item.checked ? primary : 'white',
-                      borderColor: item.checked ? primary : '#E5E7EB',
-                      opacity: item.disabled ? 0.4 : 1,
+                      backgroundColor: (item.token as any).bg,
+                      borderColor: (item.token as any).border,
                     }}
                   >
                     {item.checked && (
-                      <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        style={{ color: (item.token as any).icon }}
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
-                  <span
-                    className="text-sm"
-                    style={{
-                      fontFamily: fonts.body,
-                      color: item.disabled ? '#D1D5DB' : '#374151',
-                    }}
-                  >
+                  <span className="text-sm" style={{ fontFamily: fonts.body, color: (item.token as any).icon === '#9CA3AF' ? '#9CA3AF' : '#374151' }}>
                     {item.label}
                   </span>
                 </label>
@@ -237,36 +215,22 @@ export default function ComponentKit({ components, colors, typography }: Props) 
           <div className="p-6 border border-gray-100 rounded-xl">
             <p className="text-xs text-gray-400 mb-4">Radio</p>
             <div className="space-y-3">
-              {[
-                { label: 'Option 1', value: 'option1' },
-                { label: 'Option 2', value: 'option2' },
-                { label: 'Disabled', value: 'option3', disabled: true },
-              ].map((item) => (
+              {([
+                { label: 'Option 1', value: 'option1', token: radio.selected },
+                { label: 'Option 2', value: 'option2', token: radio.unselected },
+                { label: 'Disabled', value: 'option3', token: radio.disabled },
+              ] as const).map((item) => (
                 <label key={item.value} className="flex items-center gap-3 cursor-pointer">
                   <div
-                    className="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors"
-                    style={{
-                      borderColor: radioSelected === item.value ? primary : '#E5E7EB',
-                      opacity: item.disabled ? 0.4 : 1,
-                    }}
-                    onClick={() => !item.disabled && setRadioSelected(item.value)}
+                    className="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                    style={{ borderColor: radioSelected === item.value ? radio.selected.border : radio.unselected.border }}
+                    onClick={() => item.value !== 'option3' && setRadioSelected(item.value)}
                   >
                     {radioSelected === item.value && (
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: primary }}
-                      />
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: radio.selected.dot }} />
                     )}
                   </div>
-                  <span
-                    className="text-sm"
-                    style={{
-                      fontFamily: fonts.body,
-                      color: item.disabled ? '#D1D5DB' : '#374151',
-                    }}
-                  >
-                    {item.label}
-                  </span>
+                  <span className="text-sm" style={{ fontFamily: fonts.body }}>{item.label}</span>
                 </label>
               ))}
             </div>
@@ -278,63 +242,70 @@ export default function ComponentKit({ components, colors, typography }: Props) 
       <section className="mb-12">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Badge & Tag</p>
         <div className="p-6 border border-gray-100 rounded-xl space-y-5">
+
           {/* Badge */}
-          <div>
-            <p className="text-xs text-gray-400 mb-3">Badge</p>
-            <div className="flex flex-wrap gap-2">
-              <span
-                className="inline-flex items-center justify-center text-xs px-2.5 py-1 rounded-full font-medium text-white"
-                style={{ backgroundColor: primary }}
-              >
-                Filled
-              </span>
-              <span
-                className="inline-flex items-center justify-center text-xs px-2.5 py-1 rounded-full font-medium border"
-                style={{ color: primary, borderColor: primary }}
-              >
-                Outline
-              </span>
-              <span
-                className="inline-flex items-center justify-center text-xs px-2.5 py-1 rounded-full font-medium"
-                style={{ backgroundColor: `${primary}15`, color: primary }}
-              >
-                Soft
-              </span>
-              <span
-                className="inline-flex items-center justify-center text-xs px-2 py-0.5 rounded-full font-medium text-white"
-                style={{ backgroundColor: primary }}
-              >
-                SM
-              </span>
-              <span
-                className="inline-flex items-center justify-center text-sm px-3 py-1 rounded-full font-medium text-white"
-                style={{ backgroundColor: primary }}
-              >
-                MD
-              </span>
-            </div>
-          </div>
+          {/* Badge */}
+<div>
+  <p className="text-xs text-gray-400 mb-3">Badge</p>
+  <div className="flex flex-wrap gap-2">
+    {(['filled', 'outline', 'soft'] as const).map((variant) => {
+      const t = badge.primary[variant]
+      return (
+        <span
+          key={variant}
+          className="inline-flex items-center justify-center font-medium"
+          style={{
+            fontSize: `${badge.sizes.md.fontSize}px`,
+            padding: `${badge.sizes.md.paddingY}px ${badge.sizes.md.paddingX}px`,
+            borderRadius: `${badge.sizes.md.borderRadius}px`,
+            backgroundColor: t.bg,
+            color: t.text,
+            border: t.border === 'transparent' ? 'none' : `1px solid ${t.border}`,
+          }}
+        >
+          {variant.charAt(0).toUpperCase() + variant.slice(1)}
+        </span>
+      )
+    })}
+  </div>
+</div>
 
           {/* Tag */}
           <div>
             <p className="text-xs text-gray-400 mb-3">Tag</p>
             <div className="flex flex-wrap gap-2">
-              {['디자인', '브랜딩', '마케팅', 'UI/UX'].map((tag) => (
+              {(['디자인', '브랜딩', '마케팅', 'UI/UX'] as const).map((label) => (
                 <span
-                  key={tag}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border"
-                  style={{ borderColor: '#E5E7EB', color: '#374151', fontFamily: fonts.body }}
+                  key={label}
+                  className="inline-flex items-center gap-1.5 font-medium"
+                  style={{
+                    fontSize: `${tag.sizes.md.fontSize}px`,
+                    padding: `${tag.sizes.md.paddingY}px ${tag.sizes.md.paddingX}px`,
+                    borderRadius: `${tag.sizes.md.borderRadius}px`,
+                    backgroundColor: tag.default.bg,
+                    color: tag.default.text,
+                    border: `1px solid ${tag.default.border}`,
+                    fontFamily: fonts.body,
+                  }}
                 >
-                  {tag}
-                  <button className="hover:opacity-60 transition-opacity" style={{ color: primary }}>✕</button>
+                  {label}
+                  <button className="hover:opacity-60 transition-opacity text-xs">✕</button>
                 </span>
               ))}
               <span
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full"
-                style={{ backgroundColor: `${primary}15`, color: primary, fontFamily: fonts.body }}
+                className="inline-flex items-center gap-1.5 font-medium"
+                style={{
+                  fontSize: `${tag.sizes.md.fontSize}px`,
+                  padding: `${tag.sizes.md.paddingY}px ${tag.sizes.md.paddingX}px`,
+                  borderRadius: `${tag.sizes.md.borderRadius}px`,
+                  backgroundColor: tag.colored.bg,
+                  color: tag.colored.text,
+                  border: `1px solid ${tag.colored.border}`,
+                  fontFamily: fonts.body,
+                }}
               >
                 컬러 태그
-                <button className="hover:opacity-60 transition-opacity">✕</button>
+                <button className="hover:opacity-60 transition-opacity text-xs">✕</button>
               </span>
             </div>
           </div>
@@ -344,39 +315,44 @@ export default function ComponentKit({ components, colors, typography }: Props) 
       {/* Accordion */}
       <section className="mb-12">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Accordion</p>
-        <div className="border border-gray-100 rounded-xl overflow-hidden">
+        <div className="border rounded-xl overflow-hidden" style={{ borderColor: accordion.default.header.border }}>
           {[
             { id: 'item1', title: '브랜드 아이덴티티란?', content: '브랜드 아이덴티티는 브랜드를 시각적으로 표현하는 요소들의 집합입니다. 로고, 컬러, 타이포그래피 등이 포함됩니다.' },
-            { id: 'item2', title: '컬러 시스템의 중요성', content: '일관된 컬러 사용은 브랜드 인지도를 높이고 신뢰감을 형성합니다. Primary, Secondary, Accent 컬러를 정의하여 사용합니다.' },
-            { id: 'item3', title: '타이포그래피 가이드', content: '폰트 선택과 계층 구조는 브랜드의 성격을 전달하는 중요한 요소입니다. Heading과 Body 폰트를 구분하여 사용하세요.' },
+            { id: 'item2', title: '컬러 시스템의 중요성', content: '일관된 컬러 사용은 브랜드 인지도를 높이고 신뢰감을 형성합니다.' },
+            { id: 'item3', title: '타이포그래피 가이드', content: '폰트 선택과 계층 구조는 브랜드의 성격을 전달하는 중요한 요소입니다.' },
           ].map((item, index) => (
-            <div
-              key={item.id}
-              className={index !== 2 ? 'border-b border-gray-100' : ''}
-            >
+            <div key={item.id} style={{ borderBottom: index !== 2 ? `1px solid ${accordion.default.header.border}` : 'none' }}>
               <button
                 onClick={() => setAccordionOpen(accordionOpen === item.id ? null : item.id)}
-                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors"
+                style={{
+                  backgroundColor: accordionOpen === item.id
+                    ? accordion.default.headerHover.bg
+                    : accordion.default.header.bg,
+                  fontFamily: fonts.body,
+                }}
               >
-                <span
-                  className="text-sm font-medium text-gray-800"
-                  style={{ fontFamily: fonts.body }}
-                >
+                <span className="text-sm font-medium" style={{ color: accordion.default.header.text }}>
                   {item.title}
                 </span>
                 <span
-                  className="text-gray-400 transition-transform duration-200"
-                  style={{ transform: accordionOpen === item.id ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  className="transition-transform duration-200"
+                  style={{
+                    color: accordionOpen === item.id
+                      ? accordion.default.iconOpen.color
+                      : accordion.default.icon.color,
+                    transform: accordionOpen === item.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
                 >
                   ↓
                 </span>
               </button>
               {accordionOpen === item.id && (
-                <div className="px-5 pb-4">
-                  <p
-                    className="text-sm text-gray-500 leading-relaxed"
-                    style={{ fontFamily: fonts.body }}
-                  >
+                <div
+                  className="px-5 pb-4"
+                  style={{ backgroundColor: accordion.default.content.bg }}
+                >
+                  <p className="text-sm leading-relaxed" style={{ color: accordion.default.content.text, fontFamily: fonts.body }}>
                     {item.content}
                   </p>
                 </div>
@@ -394,20 +370,19 @@ export default function ComponentKit({ components, colors, typography }: Props) 
             {['홈', '브랜드 가이드', '컴포넌트'].map((item, index, arr) => (
               <div key={item} className="flex items-center gap-2">
                 <span
-                  className={`text-sm transition-colors ${
-                    index === arr.length - 1
-                      ? 'font-medium'
-                      : 'hover:opacity-80 cursor-pointer'
-                  }`}
+                  className="text-sm transition-colors cursor-pointer"
                   style={{
-                    color: index === arr.length - 1 ? primary : '#9CA3AF',
+                    color: index === arr.length - 1
+                      ? breadcrumb.active.text
+                      : breadcrumb.default.text,
+                    fontWeight: index === arr.length - 1 ? breadcrumb.active.fontWeight : 400,
                     fontFamily: fonts.body,
                   }}
                 >
                   {item}
                 </span>
                 {index < arr.length - 1 && (
-                  <span className="text-gray-300 text-sm">/</span>
+                  <span className="text-sm" style={{ color: breadcrumb.separator.text }}>/</span>
                 )}
               </div>
             ))}
@@ -418,54 +393,34 @@ export default function ComponentKit({ components, colors, typography }: Props) 
       {/* Card */}
       <section>
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Card</p>
-        <div className="grid grid-cols-3 gap-4">
-          {/* Default */}
-          <div className="p-5 bg-white border border-gray-100 rounded-xl">
-            <p className="text-xs text-gray-400 mb-3">Default</p>
-            <div
-              className="w-full h-24 rounded-lg mb-3"
-              style={{ backgroundColor: `${primary}10` }}
-            />
-            <p className="text-sm font-medium text-gray-900 mb-1" style={{ fontFamily: fonts.body }}>
-              카드 타이틀
-            </p>
-            <p className="text-xs text-gray-400" style={{ fontFamily: fonts.body }}>
-              카드 설명 텍스트입니다.
-            </p>
-          </div>
-
-          {/* Bordered */}
-          <div className="p-5 bg-white rounded-xl" style={{ border: `1.5px solid ${primary}30` }}>
-            <p className="text-xs text-gray-400 mb-3">Bordered</p>
-            <div
-              className="w-full h-24 rounded-lg mb-3"
-              style={{ backgroundColor: `${primary}10` }}
-            />
-            <p className="text-sm font-medium text-gray-900 mb-1" style={{ fontFamily: fonts.body }}>
-              카드 타이틀
-            </p>
-            <p className="text-xs text-gray-400" style={{ fontFamily: fonts.body }}>
-              카드 설명 텍스트입니다.
-            </p>
-          </div>
-
-          {/* Elevated */}
-          <div
-            className="p-5 bg-white rounded-xl"
-            style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}
-          >
-            <p className="text-xs text-gray-400 mb-3">Elevated</p>
-            <div
-              className="w-full h-24 rounded-lg mb-3"
-              style={{ backgroundColor: `${primary}10` }}
-            />
-            <p className="text-sm font-medium text-gray-900 mb-1" style={{ fontFamily: fonts.body }}>
-              카드 타이틀
-            </p>
-            <p className="text-xs text-gray-400" style={{ fontFamily: fonts.body }}>
-              카드 설명 텍스트입니다.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {(['default', 'bordered', 'elevated'] as const).map((variant) => {
+            const t = card[variant]
+            return (
+              <div
+                key={variant}
+                style={{
+                  backgroundColor: t.bg,
+                  border: t.border === 'transparent' ? 'none' : `1px solid ${t.border}`,
+                  boxShadow: t.shadow,
+                  borderRadius: `${t.borderRadius}px`,
+                  padding: `${card.padding.md}px`,
+                }}
+              >
+                <p className="text-xs text-gray-400 mb-3 capitalize">{variant}</p>
+                <div
+                  className="w-full h-20 rounded-lg mb-3"
+                  style={{ backgroundColor: button.primary.default.bg + '15' }}
+                />
+                <p className="text-sm font-medium mb-1" style={{ fontFamily: fonts.body, color: '#111' }}>
+                  카드 타이틀
+                </p>
+                <p className="text-xs" style={{ fontFamily: fonts.body, color: '#9CA3AF' }}>
+                  카드 설명 텍스트입니다.
+                </p>
+              </div>
+            )
+          })}
         </div>
       </section>
     </div>

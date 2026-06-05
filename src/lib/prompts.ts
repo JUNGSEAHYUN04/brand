@@ -6,17 +6,15 @@ export const getSystemPrompt = () => `
 
 반드시 지켜야 할 규칙:
 1. 순수 JSON만 반환하세요. 마크다운 백틱, 설명 텍스트 절대 금지
-2. JSON 키는 반드시 이 순서대로: brand → logo → colors → typography → spacing → components
+2. JSON 키는 반드시 이 순서대로: brand → colors → typography
 3. 폰트는 Google Fonts에 실제 존재하는 폰트명만 사용하세요
    - 한글이 포함된 브랜드명이면 한글을 지원하는 Google Fonts 폰트를 우선 선택하세요
    - 예시(한글 지원): Noto Sans KR, Nanum Gothic, Nanum Myeongjo, Black Han Sans, Do Hyeon
    - 예시(영문): Inter, Playfair Display, Montserrat, DM Sans, Space Grotesk, JetBrains Mono
-4. 로고는 반드시 가로형(landscape) SVG로 생성하세요 (viewBox="0 0 320 80" 기준)
-5. 로고 색상은 최소 2가지 이상 사용하고, 그라디언트도 허용합니다
-6. 브랜드 키워드를 분석해서 톤앤매너, 컬러, 폰트 등 모든 요소를 자동으로 결정하세요
-7. WCAG 2.1 접근성 기준을 준수하세요 — 텍스트와 배경 간 명도 대비 4.5:1 이상
-8. 컬러 조합은 색상 이론(보색, 유사색, 삼각배색 등)을 기반으로 조화롭게 선택하세요
-9. 폰트 조합은 Heading과 Body가 서로 대비되면서도 조화로운 쌍으로 선택하세요
+4. 브랜드 키워드를 분석해서 톤앤매너, 컬러, 폰트 등 모든 요소를 자동으로 결정하세요
+5. WCAG 2.1 접근성 기준을 준수하세요 — 텍스트와 배경 간 명도 대비 4.5:1 이상
+6. 컬러 조합은 색상 이론(보색, 유사색, 삼각배색 등)을 기반으로 조화롭게 선택하세요
+7. 폰트 조합은 Heading과 Body가 서로 대비되면서도 조화로운 쌍으로 선택하세요
 `
 
 export const getUserPrompt = (values: FormValues) => `
@@ -44,25 +42,13 @@ export const getUserPrompt = (values: FormValues) => `
 - 각각 5단어(단어 기준) 이내
 - 키워드에서 추론된 톤앤매너에 맞는 스타일로 작성
 
-=== 로고 SVG 규칙 ===
-- 반드시 가로형 레이아웃 (viewBox="0 0 320 80")
-- 키워드 톤앤매너에 따라 아래 3가지 스타일 중 1개 선택:
-  · wordmark: 브랜드명 전체를 타이포그래피로 표현 (미니멀/모던 톤에 적합)
-  · lettermark: 브랜드명 이니셜 1~2자를 심볼화 (고급스러운/전문적 톤에 적합)
-  · symbol+wordmark: 기하학적 심볼 + 브랜드명 텍스트 조합 (친근한/역동적 톤에 적합)
-- 색상 사용 규칙:
-  · 최소 2가지 색상 사용 필수
-  · 그라디언트 허용 (단, SVG linearGradient 문법으로 작성)
-  · 생성된 Primary, Secondary 컬러를 활용
-  · 배경은 투명(transparent)으로 설정
-- SVG 내부에 외부 폰트 import 금지 (텍스트는 SVG 기본 font-family 사용)
-
 === 컬러 규칙 ===
 - Primary, Secondary, Accent 3가지 반드시 생성
 - 키워드에서 추론된 업종 특성과 톤앤매너를 동시에 고려해서 결정
 - WCAG 2.1 기준 — Primary 컬러는 흰 배경에서 명도 대비 4.5:1 이상 확보
 - 각 색상마다 "어디에 주로 쓰이는지" usage 설명 포함
 - Neutral 팔레트는 Primary 컬러와 어울리는 톤으로 생성 (완전한 무채색 지양)
+- Neutral은 반드시 50, 100, 200, 300, 400, 500, 900 7개 모두 생성
 - Semantic 컬러(success/error/warning/info)는 범용적인 색상으로 생성
 
 === 폰트 규칙 ===
@@ -73,7 +59,7 @@ export const getUserPrompt = (values: FormValues) => `
 - 키워드 톤앤매너에 맞는 폰트 선택
   예시: 고급스러운 → Playfair Display / 모던한 → Inter / 친근한 → Nunito
 
-=== 출력 JSON 구조 ===
+=== 출력 JSON 구조 (이 구조만 반환, 다른 키 추가 금지) ===
 {
   "brand": {
     "name": "확정된 브랜드명",
@@ -86,11 +72,6 @@ export const getUserPrompt = (values: FormValues) => `
     "personality": ["성격 키워드1", "성격 키워드2", "성격 키워드3"],
     "tone": "이 브랜드의 톤앤매너 설명 (2~3문장으로 구체적으로)"
   },
-  "logo": {
-    "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 80'>...</svg>",
-    "style": "wordmark | lettermark | symbol+wordmark",
-    "concept": "로고 디자인 컨셉과 선택 이유 (2~3문장)"
-  },
   "colors": {
     "primary": { "hex": "#...", "rgb": "r, g, b", "name": "색상 이름", "usage": "CTA 버튼, 주요 강조 요소" },
     "secondary": { "hex": "#...", "rgb": "r, g, b", "name": "색상 이름", "usage": "서브 섹션, 보조 UI 요소" },
@@ -99,6 +80,8 @@ export const getUserPrompt = (values: FormValues) => `
       "50": "#...",
       "100": "#...",
       "200": "#...",
+      "300": "#...",
+      "400": "#...",
       "500": "#...",
       "900": "#..."
     },
@@ -127,33 +110,33 @@ export const getUserPrompt = (values: FormValues) => `
       "caption": { "size": 12, "weight": 400, "lineHeight": 1.4 },
       "label": { "size": 12, "weight": 500, "lineHeight": 1.4, "letterSpacing": "0.08em" }
     }
-  },
-  "spacing": {
-    "base": 4,
-    "scale": { "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 32, "2xl": 48, "3xl": 64 },
-    "borderRadius": { "sm": 4, "md": 8, "lg": 12, "xl": 16, "full": 9999 }
-  },
-  "components": {
-    "button": {
-      "variants": ["primary", "secondary", "ghost", "danger"],
-      "sizes": {
-        "sm": { "height": 32, "paddingX": 12, "fontSize": 13 },
-        "md": { "height": 40, "paddingX": 16, "fontSize": 14 },
-        "lg": { "height": 48, "paddingX": 20, "fontSize": 16 }
-      },
-      "states": ["default", "hover", "active", "disabled", "loading"]
-    },
-    "input": {
-      "variants": ["text", "password", "search", "textarea"],
-      "states": ["default", "focus", "error", "success", "disabled"]
-    },
-    "checkbox": { "states": ["unchecked", "checked", "indeterminate", "disabled"] },
-    "radio": { "states": ["unselected", "selected", "disabled"] },
-    "badge": { "variants": ["filled", "outline", "soft"], "sizes": ["sm", "md"] },
-    "tag": { "dismissible": true, "variants": ["default", "colored"] },
-    "accordion": { "variants": ["default", "bordered"], "multiple": true },
-    "breadcrumb": { "separator": "/", "maxVisible": 4 },
-    "card": { "variants": ["default", "bordered", "elevated"], "padding": "md" }
   }
 }
+`
+
+export const getLogoPrompt = (brand: {
+  name: string
+  personality: string[]
+  tone: string
+  colors: {
+    primary: { hex: string; name: string }
+    secondary: { hex: string; name: string }
+    accent: { hex: string; name: string }
+  }
+}) => `
+Create a professional, minimalist logo for a brand called "${brand.name}".
+
+Brand personality: ${brand.personality.join(', ')}
+Brand tone: ${brand.tone}
+Primary color: ${brand.colors.primary.name} (${brand.colors.primary.hex})
+Secondary color: ${brand.colors.secondary.name} (${brand.colors.secondary.hex})
+Accent color: ${brand.colors.accent.name} (${brand.colors.accent.hex})
+
+Requirements:
+- Clean, modern, professional design
+- Suitable for digital and print use
+- White or transparent background
+- Incorporate the brand colors
+- Simple and memorable
+- No text in the logo (icon/symbol only)
 `

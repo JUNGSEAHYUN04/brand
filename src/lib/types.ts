@@ -13,9 +13,9 @@ export interface Brand {
 
 // 로고
 export interface Logo {
-  svg: string
-  style: 'wordmark' | 'lettermark' | 'symbol+wordmark'
-  concept: string
+  url: string        // 이미지 URL
+  concept: string    // 로고 컨셉 설명
+  style: string      // 로고 스타일
 }
 
 // 단일 컬러
@@ -32,12 +32,14 @@ export interface Colors {
   secondary: ColorToken
   accent: ColorToken
   neutral: {
-    '50': string
-    '100': string
-    '200': string
-    '500': string
-    '900': string
-  }
+  '50': string
+  '100': string
+  '200': string
+  '300': string  // 추가
+  '400': string  // 추가
+  '500': string
+  '900': string
+}
   semantic: {
     success: string
     error: string
@@ -96,55 +98,25 @@ export interface Spacing {
   }
 }
 
-// 버튼 사이즈
-export interface ButtonSize {
-  height: number
-  paddingX: number
-  fontSize: number
-}
 
-// 컴포넌트
-export interface Components {
-  button: {
-    variants: string[]
-    sizes: {
-      sm: ButtonSize
-      md: ButtonSize
-      lg: ButtonSize
-    }
-    states: string[]
-  }
-  input: {
-    variants: string[]
-    states: string[]
-  }
-  checkbox: { states: string[] }
-  radio: { states: string[] }
-  badge: { variants: string[]; sizes: string[] }
-  tag: { dismissible: boolean; variants: string[] }
-  accordion: { variants: string[]; multiple: boolean }
-  breadcrumb: { separator: string; maxVisible: number }
-  card: { variants: string[]; padding: string }
-}
+
+
 
 // 전체 브랜드 아이덴티티
 export interface BrandIdentity {
   brand: Brand
-  logo: Logo
+  logo?: Logo        // optional로 변경
   colors: Colors
   typography: Typography
-  spacing: Spacing
-  components: Components
+  spacing?: Spacing
 }
 
-// 스트리밍 파싱 상태 (부분적으로 완성된 상태)
 export interface PartialBrandIdentity {
   brand?: Brand
   logo?: Logo
   colors?: Colors
   typography?: Typography
   spacing?: Spacing
-  components?: Components
 }
 
 // 폼 입력값

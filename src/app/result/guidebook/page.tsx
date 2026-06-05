@@ -7,6 +7,7 @@ import ColorSystem from '@/components/guidebook/ColorSystem'
 import Typography from '@/components/guidebook/Typography'
 import Spacing from '@/components/guidebook/Spacing'
 import ComponentKit from '@/components/guidebook/ComponentKit'
+import { Spacing as SpacingType } from '@/lib/types'
 
 const SECTIONS = [
   { id: 'colors', label: '컬러 시스템' },
@@ -15,11 +16,16 @@ const SECTIONS = [
   { id: 'components', label: 'UI 컴포넌트' },
 ]
 
+const DEFAULT_SPACING: SpacingType = {
+  base: 4,
+  scale: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, '2xl': 48, '3xl': 64 },
+  borderRadius: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
+}
+
 export default function GuidebookPage() {
   const router = useRouter()
   const { brandData, status, reset } = useBrandStore()
   const [activeSection, setActiveSection] = useState('colors')
-  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     if (status === 'idle') router.push('/create')
@@ -28,7 +34,8 @@ export default function GuidebookPage() {
 
   if (!brandData) return null
 
-  const { brand, colors, typography, spacing, components, logo } = brandData
+  const { brand, colors, typography, logo } = brandData
+  const spacing = brandData.spacing ?? DEFAULT_SPACING
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -80,13 +87,13 @@ export default function GuidebookPage() {
             ))}
           </nav>
 
-          <div className="mt-8 px-2">
-            <p className="text-xs text-gray-400 mb-3">Logo</p>
-            <div
-              className="w-full"
-              dangerouslySetInnerHTML={{ __html: logo.svg }}
-            />
-          </div>
+          {/* 로고 — 있을 때만 표시 */}
+          {logo?.url && (
+            <div className="mt-8 px-2">
+              <p className="text-xs text-gray-400 mb-3">Logo</p>
+              <img src={logo.url} alt={`${brand.name} logo`} className="w-full" />
+            </div>
+          )}
         </aside>
 
         {/* 모바일 섹션 탭 */}
@@ -108,7 +115,6 @@ export default function GuidebookPage() {
             ))}
           </div>
 
-          {/* 모바일 메인 콘텐츠 */}
           <main className="px-4 py-8">
             <div className="mb-8 pb-6 border-b border-gray-100">
               <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Brand Identity</p>
@@ -126,7 +132,7 @@ export default function GuidebookPage() {
             {activeSection === 'colors' && <ColorSystem colors={colors} />}
             {activeSection === 'typography' && <Typography typography={typography} colors={colors} />}
             {activeSection === 'spacing' && <Spacing spacing={spacing} />}
-            {activeSection === 'components' && <ComponentKit components={components} colors={colors} typography={typography} />}
+            {activeSection === 'components' && <ComponentKit colors={colors} typography={typography} />}
           </main>
         </div>
 
@@ -148,7 +154,7 @@ export default function GuidebookPage() {
           {activeSection === 'colors' && <ColorSystem colors={colors} />}
           {activeSection === 'typography' && <Typography typography={typography} colors={colors} />}
           {activeSection === 'spacing' && <Spacing spacing={spacing} />}
-          {activeSection === 'components' && <ComponentKit components={components} colors={colors} typography={typography} />}
+          {activeSection === 'components' && <ComponentKit colors={colors} typography={typography} />}
         </main>
       </div>
     </div>
