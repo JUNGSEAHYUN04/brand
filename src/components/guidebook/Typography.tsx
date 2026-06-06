@@ -42,34 +42,31 @@ export default function Typography({ typography, colors }: Props) {
 
   return (
     <div>
-      <div className="mb-8">
-        <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Typography</p>
-        <h2 className="text-2xl font-bold text-gray-950">타이포그래피</h2>
+      <div className="mb-10">
+        <p className="text-sm text-gray-500 uppercase tracking-widest mb-2">Typography</p>
+        <h2 className="text-3xl font-bold text-gray-950">타이포그래피</h2>
       </div>
 
       {/* 폰트 패밀리 */}
-      <section className="mb-12">
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Font Family</p>
-        <div className="grid grid-cols-3 gap-4">
+      <section className="mb-14">
+        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Font Family</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
             { role: 'Heading', font: fonts.heading, sample: 'Aa Bb Cc' },
             { role: 'Body', font: fonts.body, sample: 'Aa Bb Cc' },
             { role: 'Mono', font: fonts.mono, sample: 'Aa Bb Cc' },
           ].map(({ role, font, sample }) => (
-            <div
-              key={role}
-              className="p-5 border border-gray-100 rounded-xl"
-            >
-              <p className="text-xs text-gray-400 mb-3">{role}</p>
+            <div key={role} className="p-6 border border-gray-200 rounded-xl">
+              <p className="text-sm text-gray-600 mb-4">{role}</p>
               <p
-                className="text-3xl font-bold text-gray-950 mb-2"
+                className="text-4xl font-bold mb-3"
                 style={{ fontFamily: font, color: colors.primary.hex }}
               >
                 {sample}
               </p>
-              <p className="text-xs font-medium text-gray-700 mb-1">{font}</p>
+              <p className="text-base font-medium text-gray-800 mb-2">{font}</p>
               <p
-                className="text-xs text-gray-400 break-all"
+                className="text-sm text-gray-600"
                 style={{ fontFamily: font }}
               >
                 ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />
@@ -82,23 +79,20 @@ export default function Typography({ typography, colors }: Props) {
       </section>
 
       {/* 타입 스케일 */}
-      <section className="mb-12">
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Type Scale</p>
-        <div className="border border-gray-100 rounded-xl overflow-hidden">
+      <section className="mb-14">
+        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Type Scale</p>
+        <div className="border border-gray-200 rounded-xl overflow-hidden">
           {scaleEntries.map(({ label, data, sample }, index) => (
             <div
               key={label}
-              className={`flex items-center gap-6 px-6 py-5 ${
-                index !== scaleEntries.length - 1 ? 'border-b border-gray-50' : ''
+              className={`flex items-center gap-6 px-8 py-6 ${
+                index !== scaleEntries.length - 1 ? 'border-b border-gray-100' : ''
               }`}
             >
-              {/* 메타 */}
-              <div className="w-20 shrink-0">
-                <p className="text-xs font-medium text-gray-500">{label}</p>
-                <p className="text-xs text-gray-300">{data.size}px</p>
+              <div className="w-24 shrink-0">
+                <p className="text-sm font-medium text-gray-700">{label}</p>
+                <p className="text-sm text-gray-500">{data.size}px</p>
               </div>
-
-              {/* 샘플 텍스트 */}
               <div className="flex-1 overflow-hidden">
                 <p
                   className="truncate text-gray-900"
@@ -106,7 +100,7 @@ export default function Typography({ typography, colors }: Props) {
                     fontFamily: ['Display', 'H1', 'H2', 'H3', 'H4'].includes(label)
                       ? fonts.heading
                       : fonts.body,
-                    fontSize: `${Math.min(data.size, 32)}px`,
+                    fontSize: `${Math.min(data.size, 36)}px`,
                     fontWeight: data.weight,
                     lineHeight: data.lineHeight,
                     letterSpacing: data.letterSpacing,
@@ -115,11 +109,9 @@ export default function Typography({ typography, colors }: Props) {
                   {sample}
                 </p>
               </div>
-
-              {/* 스펙 */}
               <div className="shrink-0 text-right">
-                <p className="text-xs font-mono text-gray-400">{data.size}px / {data.weight}</p>
-                <p className="text-xs font-mono text-gray-300">{data.lineHeight} leading</p>
+                <p className="text-sm font-mono text-gray-600">{data.size}px / {data.weight}</p>
+                <p className="text-sm font-mono text-gray-500">{data.lineHeight} leading</p>
               </div>
             </div>
           ))}
@@ -128,10 +120,10 @@ export default function Typography({ typography, colors }: Props) {
 
       {/* 텍스트 조합 프리뷰 */}
       <section>
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Preview</p>
-        <div className="p-8 border border-gray-100 rounded-xl">
+        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Preview</p>
+        <div className="p-10 border border-gray-200 rounded-xl">
           <p
-            className="mb-2"
+            className="mb-3"
             style={{
               fontFamily: fonts.heading,
               fontSize: `${scale.h2.size}px`,
@@ -143,7 +135,7 @@ export default function Typography({ typography, colors }: Props) {
             브랜드의 이야기
           </p>
           <p
-            className="mb-4 text-gray-950"
+            className="mb-5 text-gray-950"
             style={{
               fontFamily: fonts.heading,
               fontSize: `${scale.h4.size}px`,
@@ -154,7 +146,7 @@ export default function Typography({ typography, colors }: Props) {
             타이포그래피로 전달하는 브랜드 아이덴티티
           </p>
           <p
-            className="text-gray-500"
+            className="text-gray-600"
             style={{
               fontFamily: fonts.body,
               fontSize: `${scale.bodyM.size}px`,

@@ -1,14 +1,29 @@
 // 브랜드 기초
 export interface Brand {
-  name: string
-  nameCandidates?: string[]
-  nameReason?: string
+  // 기본 정보
+  name: string                          // 브랜드명
+  nameCandidates?: string[]             // AI 추천 브랜드명 후보
+  nameReason?: string                   // 브랜드명 선택 이유
   slogan: {
-    ko: string
-    en: string
+    ko: string                          // 한글 슬로건
+    en: string                          // 영문 슬로건
   }
-  personality: string[]
-  tone: string
+  personality: string[]                 // 브랜드 키워드
+
+  // 브랜드 전략
+  coreValues?: {                        // 핵심 가치 3개
+    title: string                       // 핵심 가치명
+    description: string                 // 핵심 가치 설명
+  }[]
+  brandEssence?: string                 // 브랜드의 문장 (브랜드 존재이유 + 지향하는 미래)
+
+  // 톤앤매너
+  tone: string                          // 톤앤매너 한 줄 요약
+  coreTone?: string[]                   // 브랜드 핵심 톤 키워드 3~5개
+
+  // 비주얼 디렉션
+  designPrinciples?: string[]           // 디자인 원칙 3개
+  designDirection?: string              // 전체 디자인 방향성 한 줄 요약
 }
 
 // 로고
