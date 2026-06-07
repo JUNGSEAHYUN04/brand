@@ -1,0 +1,41 @@
+# brandkit → Oracle E2.1.Micro 운영용 compose
+#
+# 운영 명령:
+#   docker compose up -d --build      # 첫 빌드 + 백그라운드 기동
+#   docker compose logs -f            # 실시간 로그
+#   docker compose ps                 # 상태 확인
+#   docker compose down               # 정지·제거
+#   git pull && docker compose up -d --build   # 코드 갱신 후 재배포
+
+services:
+  brandkit:
+    build: .
+    image: brandkit:latest
+    container_name: brandkit
+    restart: unless-stopped         # 서버 재부팅 시 자동 기동, 수동 중지는 존중
+
+    ports:
+      - "7860:3000"                 # 호스트:컨테이너 (nginx가 80/443에서 → 7860으로 프록시)
+
+    env_file:
+      - .env.local                  # API KEY 등 비밀값 (이 파일은 git 제외 / chmod 600)
+
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+
+    # E2.1.Micro 1GB RAM 보호: 컨테이너에 512MB 한도, swap 1GB까지 허용
+    mem_limit: 512m
+    memswap_limit: 1024m
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+    # OOM 발생 시 docker가 재기동
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3

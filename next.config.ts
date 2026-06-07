@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // standalone 빌드 (Docker 배포용)
+  output: 'standalone',
+
   // 불필요한 헤더 제거
   poweredByHeader: false,
 
