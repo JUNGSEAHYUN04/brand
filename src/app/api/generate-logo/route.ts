@@ -5,6 +5,23 @@ import { BrandIdentity } from '@/lib/types'
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_IMAGE_API_KEY!)
 const textAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
+async function generateWithRetry<T>(fn: () => Promise<T>, retries = 3, delay = 2000): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn()
+    } catch (err: any) {
+      const is503 = err?.status === 503 || err?.message?.includes('503')
+      if (is503 && i < retries - 1) {
+        console.log(`503 재시도 ${i + 1}/${retries}... ${delay * (i + 1)}ms 대기`)
+        await new Promise(res => setTimeout(res, delay * (i + 1)))
+        continue
+      }
+      throw err
+    }
+  }
+  throw new Error('최대 재시도 횟수 초과')
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body: {
@@ -34,21 +51,24 @@ export async function POST(req: NextRequest) {
 출력: 중앙 정렬, 고해상도, 심볼만 표시`
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-3.1-flash-image',
+      model: 'gemini-3-pro-image',
     })
 
-    // 이미지 + 설명 병렬 생성
     const [result, conceptResult] = await Promise.all([
-      model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ['IMAGE'] } as any,
-      }),
-      textAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' }).generateContent(
-  `"${brand.name}" 브랜드 로고 심볼의 디자인 의미와 컨셉을 1~2문장, 50자 이내로 설명해주세요.
+      generateWithRetry(() =>
+        model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['IMAGE'] } as any,
+        })
+      ),
+      generateWithRetry(() =>
+        textAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' }).generateContent(
+          `"${brand.name}" 브랜드 로고 심볼의 디자인 의미와 컨셉을 1~2문장, 50자 이내로 설명해주세요.
 브랜드 성격: ${brand.personality.join(', ')}
 톤앤매너: ${brand.tone}
 설명만 출력하세요.`
-),
+        )
+      ),
     ])
 
     const parts = result.response.candidates?.[0]?.content?.parts

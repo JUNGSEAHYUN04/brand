@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useBrandStore } from '@/store/brand-store'
 import LoadingAnimation from '@/components/ui/LoadingAnimation'
+import PageTransition from '@/components/ui/PageTransition'
 
 export default function LoadingScreenPage() {
   const router = useRouter()
@@ -16,8 +17,10 @@ export default function LoadingScreenPage() {
   }, [status, brandData, router])
 
   return (
-    <div className="h-screen bg-white flex flex-col items-center justify-center">
-      <LoadingAnimation />
-    </div>
+    <PageTransition>
+      <div className="h-screen bg-white flex flex-col items-center justify-center">
+        <LoadingAnimation />
+      </div>
+    </PageTransition>
   )
 }

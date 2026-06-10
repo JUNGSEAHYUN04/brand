@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import { AnimatePresence } from 'framer-motion'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,19 +17,15 @@ export const metadata: Metadata = {
   title: 'brandkit',
   description: 'AI 브랜드 아이덴티티 생성기',
 }
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
-        suppressHydrationWarning
-      >
-        {children}
+      <body>
+        <div>
+          <AnimatePresence mode="wait">
+            {children}
+          </AnimatePresence>
+        </div>
       </body>
     </html>
   )
