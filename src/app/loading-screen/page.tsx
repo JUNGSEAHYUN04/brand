@@ -8,13 +8,13 @@ import PageTransition from '@/components/ui/PageTransition'
 
 export default function LoadingScreenPage() {
   const router = useRouter()
-  const { status, brandData } = useBrandStore()
+  const { status } = useBrandStore()
 
   useEffect(() => {
     if (status === 'idle') router.push('/create')
     if (status === 'error') router.push('/create')
-    if (status === 'complete' && brandData?.logo?.url) router.push('/result')
-  }, [status, brandData, router])
+    if (status === 'complete') router.push('/result')
+  }, [status, router])
 
   return (
     <PageTransition>
