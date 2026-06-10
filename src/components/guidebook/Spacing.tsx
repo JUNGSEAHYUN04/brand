@@ -6,6 +6,18 @@ interface Props {
   spacing: SpacingType
 }
 
+const F4 = 'SCDream4, sans-serif'
+const F5 = 'SCDream5, sans-serif'
+const F6 = 'SCDream6, sans-serif'
+const F7 = 'SCDream7, sans-serif'
+
+const C_MAIN = '#282B32'
+const C_SUB = 'rgba(40,43,50,0.8)'
+const C_MUTED = 'rgba(40,43,50,0.6)'
+const C_LABEL = 'rgba(40,43,50,0.8)'
+const C_BORDER = 'rgba(40,43,50,0.2)'
+const C_BORDER_LIGHT = 'rgba(40,43,50,0.1)'
+
 export default function Spacing({ spacing }: Props) {
   const { scale, borderRadius } = spacing
 
@@ -14,34 +26,38 @@ export default function Spacing({ spacing }: Props) {
 
   return (
     <div>
-      <div className="mb-10">
-        <p className="text-sm text-gray-500 uppercase tracking-widest mb-2">Spacing</p>
-        <h2 className="text-3xl font-bold text-gray-950">여백 & 그리드</h2>
+      <div style={{ marginBottom: '40px' }}>
+        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.1em', marginBottom: '5px' }}>SPACING</p>
+        <h2 style={{ fontFamily: F7, fontSize: '32px', color: C_MAIN }}>여백 & 그리드</h2>
       </div>
 
       {/* 스페이싱 스케일 */}
-      <section className="mb-14">
-        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Spacing Scale</p>
-        <div className="border border-gray-200 rounded-xl overflow-hidden">
+      <section style={{ marginBottom: '56px' }}>
+        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>SPACING SCALE</p>
+        <div style={{ border: `1px solid ${C_BORDER}`, borderRadius: '16px', overflow: 'hidden', background: '#fff' }}>
           {scaleEntries.map(([key, value], index) => (
             <div
               key={key}
-              className={`flex items-center gap-6 px-8 py-5 ${
-                index !== scaleEntries.length - 1 ? 'border-b border-gray-100' : ''
-              }`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '24px',
+                padding: '20px 32px',
+                borderBottom: index !== scaleEntries.length - 1 ? `1px solid ${C_BORDER_LIGHT}` : 'none',
+              }}
             >
-              <div className="w-20 shrink-0">
-                <p className="text-sm font-mono font-medium text-gray-700">{key}</p>
+              <div style={{ width: '80px', flexShrink: 0 }}>
+                <p style={{ fontFamily: F5, fontSize: '13px', color: 'rgba(40,43,50,0.8)' }}>{key}</p>
               </div>
-              <div className="flex-1">
-                <div
-                  className="bg-gray-200 rounded-sm h-6"
-                  style={{ width: `${Math.min(value * 2.5, 500)}px` }}
-                />
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  width: `${Math.min(value * 2.5, 500)}px`,
+                  height: '20px',
+                  backgroundColor: C_BORDER,
+                  borderRadius: '4px',
+                }} />
               </div>
-              <div className="shrink-0 text-right">
-                <p className="text-sm font-mono text-gray-700">{value}px</p>
-                <p className="text-sm text-gray-500">{value / spacing.base}x base</p>
+              <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                <p style={{ fontFamily: F5, fontSize: '13px', color: 'rgba(40,43,50,0.8)' }}>{value}px</p>
+                <p style={{ fontFamily: F4, fontSize: '11px', color: C_MUTED, marginTop: '3px' }}>{value / spacing.base}x base</p>
               </div>
             </div>
           ))}
@@ -49,18 +65,20 @@ export default function Spacing({ spacing }: Props) {
       </section>
 
       {/* 스페이싱 시각화 */}
-      <section className="mb-14">
-        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Visual Guide</p>
-        <div className="p-10 border border-gray-200 rounded-xl bg-gray-50">
-          <div className="flex items-end gap-4 flex-wrap">
+      <section style={{ marginBottom: '56px' }}>
+        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>VISUAL GUIDE</p>
+        <div style={{ padding: '48px 40px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '28px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {scaleEntries.map(([key, value]) => (
-              <div key={key} className="flex flex-col items-center gap-2">
-                <p className="text-sm font-mono text-gray-600">{value}</p>
-                <div
-                  className="bg-gray-400 rounded-sm w-10"
-                  style={{ height: `${Math.min(value * 1.8, 144)}px` }}
-                />
-                <p className="text-sm font-mono text-gray-700 font-medium">{key}</p>
+              <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                <p style={{ fontFamily: F4, fontSize: '12px', color: C_MUTED }}>{value}</p>
+                <div style={{
+                  width: '36px',
+                  height: `${Math.min(value * 1.8, 144)}px`,
+                  backgroundColor: C_BORDER,
+                  borderRadius: '4px',
+                }} />
+                <p style={{ fontFamily: F5, fontSize: '12px', color: 'rgba(40,43,50,0.8)' }}>{key}</p>
               </div>
             ))}
           </div>
@@ -68,56 +86,82 @@ export default function Spacing({ spacing }: Props) {
       </section>
 
       {/* Border Radius */}
-      <section className="mb-14">
-        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Border Radius</p>
-        <div className="grid grid-cols-3 md:grid-cols-5 gap-5">
-          {borderRadiusEntries.map(([key, value]) => (
-            <div key={key} className="flex flex-col items-center gap-4">
-              <div
-                className="w-20 h-20 bg-gray-100 border border-gray-200"
-                style={{
+      <section style={{ marginBottom: '56px' }}>
+        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>BORDER RADIUS</p>
+        <div style={{ padding: '48px 40px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', justifyContent: 'center', alignItems: 'center' }}>
+            {borderRadiusEntries.map(([key, value]) => (
+              <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div style={{
+                  width: '80px', height: '80px',
+                  backgroundColor: 'rgba(40,43,50,0.05)',
+                  border: `1px solid ${C_BORDER}`,
                   borderRadius: key === 'full' ? '9999px' : `${value}px`,
-                }}
-              />
-              <div className="text-center">
-                <p className="text-sm font-mono font-medium text-gray-700">{key}</p>
-                <p className="text-sm font-mono text-gray-500">
-                  {key === 'full' ? '9999px' : `${value}px`}
-                </p>
+                }} />
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontFamily: F5, fontSize: '13px', color: 'rgba(40,43,50,0.8)' }}>{key}</p>
+                  <p style={{ fontFamily: F4, fontSize: '12px', color: C_MUTED, marginTop: '2px' }}>
+                    {key === 'full' ? '9999px' : `${value}px`}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 여백 적용 예시 */}
       <section>
-        <p className="text-sm font-medium text-gray-600 uppercase tracking-wider mb-5">Usage Example</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <p className="text-sm text-gray-600">Card Padding — md (16px)</p>
+        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>USAGE EXAMPLE</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+
+          {/* Card Padding */}
+          <div style={{ border: `1px solid ${C_BORDER}`, borderRadius: '16px', overflow: 'hidden', background: '#fff' }}>
+            <div style={{ padding: '12px 20px', borderBottom: `1px solid ${C_BORDER_LIGHT}`, background: '#fff' }}>
+              <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED }}>Card Padding — md ({scale.md}px)</p>
             </div>
-            <div style={{ padding: `${scale.md}px` }}>
-              <div className="bg-gray-100 rounded-lg h-24 flex items-center justify-center">
-                <p className="text-sm text-gray-600">Content</p>
+            <div style={{ padding: `${scale.md}px`, background: 'rgba(220,38,38,0.06)' }}>
+              <div style={{
+                backgroundColor: '#fff',
+                border: `1px solid ${C_BORDER_LIGHT}`,
+                borderRadius: '10px', height: '96px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED }}>Content</p>
               </div>
             </div>
           </div>
 
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <p className="text-sm text-gray-600">Section Gap — xl (32px)</p>
+          {/* Section Gap */}
+          <div style={{ border: `1px solid ${C_BORDER}`, borderRadius: '16px', overflow: 'hidden', background: '#fff' }}>
+            <div style={{ padding: '12px 20px', borderBottom: `1px solid ${C_BORDER_LIGHT}`, background: '#fff' }}>
+              <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED }}>Section Gap — xl ({scale.xl}px)</p>
             </div>
-            <div className="p-5 flex flex-col" style={{ gap: `${scale.xl}px` }}>
-              <div className="bg-gray-100 rounded-lg h-10 flex items-center justify-center">
-                <p className="text-sm text-gray-600">Section A</p>
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+              <div style={{
+                backgroundColor: 'rgba(40,43,50,0.05)',
+                height: '40px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED }}>Section A</p>
               </div>
-              <div className="bg-gray-100 rounded-lg h-10 flex items-center justify-center">
-                <p className="text-sm text-gray-600">Section B</p>
+              <div style={{
+                height: `${scale.xl}px`,
+                background: 'rgba(220,38,38,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <p style={{ fontFamily: F5, fontSize: '11px', color: 'rgba(185,28,28,0.7)' }}>{scale.xl}px</p>
+              </div>
+              <div style={{
+                backgroundColor: 'rgba(40,43,50,0.05)',
+                height: '40px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED }}>Section B</p>
               </div>
             </div>
           </div>
+
         </div>
       </section>
     </div>
