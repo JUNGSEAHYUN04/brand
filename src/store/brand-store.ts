@@ -114,7 +114,7 @@ export const useBrandStore = create<BrandStore>((set, get) => ({
       set({ status: 'complete', brandData: result, partialData: result })
 
       // 로고는 백그라운드에서 별도 시도
-      const logo = await generateLogo(result.brand, result.colors, formValues.industry)
+      const logo = await generateLogo(result.brand, result.colors, formValues.industry || '')
       if (logo) {
         const updatedData = {
           ...result,
