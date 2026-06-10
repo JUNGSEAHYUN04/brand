@@ -17,8 +17,11 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['culori'],
   },
 
+  
+
   // 압축
   compress: true,
+  allowedDevOrigins: ['172.16.101.115'],  // ✅ 여기에 추가
 }
 
 export default nextConfig;

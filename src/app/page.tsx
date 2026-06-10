@@ -2,36 +2,50 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* 헤더 */}
-      <header className="px-6 md:px-8 py-5 flex items-center justify-between border-b border-gray-200">
-        <span className="text-sm font-semibold tracking-tight text-gray-900">brandkit</span>
-      </header>
+    <div className="min-h-screen bg-white flex flex-col" style={{ color: '#282B32' }}>
+      <style>{`
+        .start-btn:hover { opacity: 0.8; }
+      `}</style>
 
-      {/* 히어로 */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 md:px-8 text-center">
-        <div className="w-full max-w-2xl">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-950 leading-tight tracking-tight mb-6">
+      <main className="flex-1 flex flex-col items-center justify-center px-10 md:px-20">
+        <div className="max-w-2xl w-full" style={{ textAlign: "center" }}>
+
+          <p style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '15px', color: 'rgba(40,43,50,0.4)', marginBottom: '16px' }}>
+            AI Brand Identity Generator
+          </p>
+
+          <h1 style={{ fontFamily: 'Oswald-SemiBold, sans-serif', fontSize: 'clamp(52px, 7vw, 88px)', fontWeight: 600, color: '#282B32', lineHeight: 1.05, marginBottom: '24px' }}>
             키워드 하나로<br />완성되는 브랜드
           </h1>
 
-          <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-12">
-            브랜드 키워드를 입력하면 로고, 컬러, 슬로건,<br className="hidden md:block" />
-            디자인 가이드북까지 자동으로 생성해드려요.
+          <p style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '16px', color: 'rgba(40,43,50,0.5)', lineHeight: '1.75', marginBottom: '44px' }}>
+            키워드를 입력하면 로고, 컬러, 슬로건, 디자인 가이드북까지 자동으로 생성돼요.
           </p>
 
           <Link
             href="/create"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gray-950 text-white text-base font-medium rounded-xl hover:bg-gray-800 transition-colors"
+            className="start-btn"
+            style={{
+              fontFamily: 'SCDream5, sans-serif',
+              fontSize: '15px',
+              background: '#282B32',
+              color: '#fff',
+              borderRadius: '14px',
+              padding: '16px 40px',
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'opacity 0.15s',
+            }}
           >
             시작하기 →
           </Link>
         </div>
       </main>
 
-      {/* 푸터 */}
-      <footer className="px-6 md:px-8 py-5 border-t border-gray-200">
-        <p className="text-xs text-gray-500 text-center">© 2025 brandkit</p>
+      <footer className="px-10 md:px-20 py-6">
+        <p style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '12px', color: 'rgba(40,43,50,0.25)', textAlign: 'center' }}>
+          © 2025 brandkit
+        </p>
       </footer>
     </div>
   )

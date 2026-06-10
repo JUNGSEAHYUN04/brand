@@ -1,50 +1,83 @@
 'use client'
 
-import { Logo } from '@/lib/types'
+import { Logo, Brand } from '@/lib/types'
 
 interface Props {
   logo: Logo
+  brand?: Brand
 }
 
-export default function LogoCard({ logo }: Props) {
+const F4 = 'SCDream4, sans-serif'
+const F5 = 'SCDream5, sans-serif'
+const F7 = 'SCDream7, sans-serif'
+
+export default function LogoCard({ logo, brand }: Props) {
+  const handleDownload = () => {
+    const a = document.createElement('a')
+    a.href = logo.url
+    a.download = `${brand?.name || 'logo'}-logo.png`
+    a.click()
+  }
+
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-6">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Logo</p>
-          <p className="text-xs text-gray-300 capitalize">{logo.style}</p>
-        </div>
+    <div className="bg-white rounded-2xl p-6" style={{ border: '1px solid rgba(40,43,50,0.08)' }}>
+      <div className="flex items-center justify-between mb-5">
+        <p style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.7)', letterSpacing: '0.1em' }}>
+          LOGO
+        </p>
+        <button
+          onClick={handleDownload}
+          className="transition-all"
+          style={{
+            fontFamily: F4,
+            fontSize: '12px',
+            padding: '6px 14px',
+            border: '1px solid rgba(40,43,50,0.15)',
+            borderRadius: '8px',
+            color: 'rgba(40,43,50,0.6)',
+            background: 'none',
+            cursor: 'pointer',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.borderColor = '#282B32'
+            e.currentTarget.style.color = '#282B32'
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(40,43,50,0.15)'
+            e.currentTarget.style.color = 'rgba(40,43,50,0.6)'
+          }}
+        >
+          다운로드
+        </button>
       </div>
 
-      {/* 로고 프리뷰 */}
-      {logo.url ? (
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="flex items-center justify-center bg-gray-50 rounded-xl p-6 h-32">
-            <img src={logo.url} alt="logo" className="max-w-full max-h-full object-contain" />
-          </div>
-          <div className="flex items-center justify-center bg-gray-950 rounded-xl p-6 h-32">
-            <img src={logo.url} alt="logo" className="max-w-full max-h-full object-contain" />
-          </div>
+      <div className="flex items-center gap-8">
+        <div className="shrink-0 w-48 h-48 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(40,43,50,0.06)' }}>
+          <img src={logo.url} alt="logo" className="w-full h-full object-cover" />
         </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="flex items-center justify-center bg-gray-50 rounded-xl h-32">
-            <p className="text-xs text-gray-300">로고 생성 예정</p>
-          </div>
-          <div className="flex items-center justify-center bg-gray-950 rounded-xl h-32">
-            <p className="text-xs text-gray-600">로고 생성 예정</p>
-          </div>
-        </div>
-      )}
 
-      {/* 컨셉 설명 */}
-      {logo.concept && (
-        <div className="pt-4 border-t border-gray-50">
-          <p className="text-xs text-gray-400 mb-1">디자인 컨셉</p>
-          <p className="text-sm text-gray-600 leading-relaxed">{logo.concept}</p>
+        <div className="flex-1">
+          {brand?.name && (
+            <h2 style={{ fontFamily: F7, fontSize: '28px', color: '#282B32', marginBottom: '12px', lineHeight: 1.1 }}>
+              {brand.name}
+            </h2>
+          )}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <span style={{ fontFamily: F5, fontSize: '12px', color: 'rgba(40,43,50,0.6)', background: 'rgba(40,43,50,0.06)', padding: '4px 12px', borderRadius: '99px' }}>
+              {logo.style || 'Symbol'}
+            </span>
+            {brand?.personality?.slice(0, 2).map((p) => (
+              <span key={p} style={{ fontFamily: F4, fontSize: '12px', color: 'rgba(40,43,50,0.6)', background: 'rgba(40,43,50,0.06)', padding: '4px 12px', borderRadius: '99px' }}>
+                {p}
+              </span>
+            ))}
+          </div>
+          <p style={{ fontFamily: F4, fontSize: '13px', color: 'rgba(40,43,50,0.55)', lineHeight: '1.65' }}
+            className="line-clamp-2">
+            {logo.concept || '브랜드 아이덴티티를 시각적으로 표현한 심볼 로고입니다.'}
+          </p>
         </div>
-      )}
+      </div>
     </div>
   )
 }

@@ -8,6 +8,9 @@ interface Props {
   colors?: Colors
 }
 
+const F4 = 'SCDream4, sans-serif'
+const F5 = 'SCDream5, sans-serif'
+
 export default function FontCard({ typography, colors }: Props) {
   const { fonts, scale } = typography
 
@@ -21,106 +24,89 @@ export default function FontCard({ typography, colors }: Props) {
     link.rel = 'stylesheet'
     link.href = `https://fonts.googleapis.com/css2?family=${fontNames}&display=swap`
     document.head.appendChild(link)
-
-    return () => {
-      document.head.removeChild(link)
-    }
+    return () => { document.head.removeChild(link) }
   }, [fonts])
 
-  const primaryColor = colors?.primary?.hex || '#0F0F0F'
+  const primaryColor = colors?.primary?.hex || '#282B32'
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6">
-      {/* 헤더 */}
+    <div className="bg-white rounded-2xl p-6" style={{ border: '1px solid rgba(40,43,50,0.08)' }}>
+
       <div className="mb-6">
-        <p className="text-xs text-gray-500 uppercase tracking-widest">Typography</p>
+        <p style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.7)', letterSpacing: '0.1em' }}>
+          TYPOGRAPHY
+        </p>
       </div>
 
-      {/* 가로 배치 — 폰트 3개 + 타입 스케일 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
         {/* Heading */}
-        <div className="p-4 bg-gray-50 rounded-xl">
-          <p className="text-xs text-gray-600 mb-3">Heading</p>
-          <p
-            className="text-2xl font-bold leading-tight mb-2 truncate"
-            style={{ fontFamily: fonts.heading, color: primaryColor }}
-          >
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(40,43,50,0.03)' }}>
+          <p style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.45)', marginBottom: '12px' }}>Heading</p>
+          <p className="text-2xl font-bold leading-tight mb-2 truncate"
+            style={{ fontFamily: fonts.heading, color: primaryColor }}>
             {fonts.heading}
           </p>
-          <p
-            className="text-xs text-gray-600 leading-relaxed"
-            style={{ fontFamily: fonts.heading }}
-          >
+          <p className="text-xs leading-relaxed" style={{ fontFamily: fonts.heading, color: 'rgba(40,43,50,0.5)' }}>
             ABCDEFGHIJKLM<br />NOPQRSTUVWXYZ
           </p>
         </div>
 
         {/* Body */}
-        <div className="p-4 bg-gray-50 rounded-xl">
-          <p className="text-xs text-gray-600 mb-3">Body</p>
-          <p
-            className="text-2xl font-bold leading-tight mb-2 truncate text-gray-900"
-            style={{ fontFamily: fonts.body }}
-          >
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(40,43,50,0.03)' }}>
+          <p style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.45)', marginBottom: '12px' }}>Body</p>
+          <p className="text-2xl font-bold leading-tight mb-2 truncate"
+            style={{ fontFamily: fonts.body, color: '#282B32' }}>
             {fonts.body}
           </p>
-          <p
-            className="text-xs text-gray-600 leading-relaxed"
-            style={{ fontFamily: fonts.body }}
-          >
+          <p className="text-xs leading-relaxed" style={{ fontFamily: fonts.body, color: 'rgba(40,43,50,0.5)' }}>
             The quick brown fox<br />jumps over the lazy dog
           </p>
         </div>
 
         {/* Mono */}
-        <div className="p-4 bg-gray-50 rounded-xl">
-          <p className="text-xs text-gray-600 mb-3">Mono</p>
-          <p
-            className="text-xl font-bold leading-tight mb-2 truncate text-gray-900"
-            style={{ fontFamily: fonts.mono }}
-          >
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(40,43,50,0.03)' }}>
+          <p style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.45)', marginBottom: '12px' }}>Mono</p>
+          <p className="text-xl font-bold leading-tight mb-2 truncate"
+            style={{ fontFamily: fonts.mono, color: '#282B32' }}>
             {fonts.mono}
           </p>
-          <p
-            className="text-xs text-gray-600 leading-relaxed"
-            style={{ fontFamily: fonts.mono }}
-          >
+          <p className="text-xs leading-relaxed" style={{ fontFamily: fonts.mono, color: 'rgba(40,43,50,0.5)' }}>
             const brand =<br />'identity'
           </p>
         </div>
 
-        {/* 타입 스케일 */}
-        <div className="p-4 bg-gray-50 rounded-xl">
-          <p className="text-xs text-gray-600 mb-3">Type Scale</p>
+        {/* Type Scale */}
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(40,43,50,0.03)' }}>
+          <p style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.45)', marginBottom: '12px' }}>Type Scale</p>
           <div className="space-y-1.5">
             {[
               { label: 'Display', data: scale.display },
-              { label: 'H1', data: scale.h1 },
-              { label: 'H2', data: scale.h2 },
-              { label: 'H3', data: scale.h3 },
-              { label: 'Body L', data: scale.bodyL },
-              { label: 'Body M', data: scale.bodyM },
+              { label: 'H1',      data: scale.h1 },
+              { label: 'H2',      data: scale.h2 },
+              { label: 'H3',      data: scale.h3 },
+              { label: 'Body L',  data: scale.bodyL },
+              { label: 'Body M',  data: scale.bodyM },
               { label: 'Caption', data: scale.caption },
             ].map(({ label, data }) => (
               <div key={label} className="flex items-center justify-between">
-                <span
-                  className="text-gray-800 truncate flex-1"
-                  style={{
-                    fontFamily: fonts.heading,
-                    fontSize: `${Math.min(data.size, 16)}px`,
-                    fontWeight: data.weight,
-                    lineHeight: data.lineHeight,
-                  }}
-                >
+                <span className="truncate flex-1" style={{
+                  fontFamily: fonts.heading,
+                  fontSize: `${Math.min(data.size, 16)}px`,
+                  fontWeight: data.weight,
+                  lineHeight: data.lineHeight,
+                  color: '#282B32',
+                }}>
                   {label}
                 </span>
-                <span className="text-xs text-gray-500 shrink-0 ml-2">
+                <span style={{ fontFamily: F4, fontSize: '11px', color: 'rgba(40,43,50,0.4)', marginLeft: '8px', flexShrink: 0 }}>
                   {data.size}px
                 </span>
               </div>
             ))}
           </div>
         </div>
+
       </div>
     </div>
   )

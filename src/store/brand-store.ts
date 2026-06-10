@@ -75,11 +75,50 @@ export const useBrandStore = create<BrandStore>((set, get) => ({
         }
       }
       if (parser.isComplete()) {
-        set({ status: 'complete', brandData: parser.getResult() as BrandIdentity, partialData: parser.getResult() })
+        const result = parser.getResult() as BrandIdentity
+        set({ status: 'complete', brandData: result, partialData: result })
+
+        // 백그라운드에서 로고 생성
+        const logoResponse = await fetch('/api/generate-logo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            brand: result.brand,
+            colors: result.colors,
+            industry: formValues.industry,
+          }),
+        })
+        if (logoResponse.ok) {
+  const { url, concept, style } = await logoResponse.json()
+  const updatedData = {
+    ...result,
+    logo: { url, concept: concept || '', style: style || 'symbol' },
+  }
+  set({ brandData: updatedData, partialData: updatedData })
+}
       } else {
         try {
           const fullData = JSON.parse(parser.getBuffer()) as BrandIdentity
           set({ status: 'complete', brandData: fullData, partialData: fullData })
+
+          // 백그라운드에서 로고 생성
+          const logoResponse = await fetch('/api/generate-logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              brand: fullData.brand,
+              colors: fullData.colors,
+              industry: formValues.industry,
+            }),
+          })
+          if (logoResponse.ok) {
+  const { url, concept, style } = await logoResponse.json()
+  const updatedData = {
+    ...fullData,
+    logo: { url, concept: concept || '', style: style || 'symbol' },
+  }
+  set({ brandData: updatedData, partialData: updatedData })
+}
         } catch {
           throw new Error('데이터 파싱에 실패했습니다. 다시 시도해주세요.')
         }
