@@ -14,9 +14,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // 확장 프롬프트
-    const expandPrompt = `
-다음 Simple 브랜드 데이터를 Full 브랜드 데이터로 확장하세요.
+    // 💡 1번 프롬프트: 브랜드 기획 및 텍스트 데이터 전용
+    const brandPrompt = `
+다음 Simple 브랜드 데이터를 바탕으로 Full '브랜드 기획' 데이터를 JSON으로 확장하세요.
 
 === 기존 데이터 ===
 브랜드명: ${simpleData.brand.name}
@@ -24,145 +24,100 @@ export async function POST(request: Request) {
 성격: ${simpleData.brand.personality.join(', ')}
 톤: ${simpleData.brand.tone}
 
-Primary Color: ${simpleData.colors.primary.name} (${simpleData.colors.primary.hex})
-Secondary Color: ${simpleData.colors.secondary.name} (${simpleData.colors.secondary.hex})
-Accent Color: ${simpleData.colors.accent.name} (${simpleData.colors.accent.hex})
-
-Heading Font: ${simpleData.typography.heading.name}
-Body Font: ${simpleData.typography.body.name}
-Mono Font: ${simpleData.typography.mono.name}
-
-=== 확장할 항목 ===
-
-1. nameReason: 브랜드명을 선택한 이유 (1~2문장)
-2. brandEssence: 브랜드의 존재이유와 지향하는 미래 (1문장)
-3. coreTone: 핵심 톤 키워드 3~5개
-4. positioning: 브랜드 포지셔닝 (구조화)
-   - category: 어떤 카테고리/시장에 속하는지
-   - competitors: 주요 경쟁 상대 또는 경쟁 구도 (1~2문장)
-   - differentiation: 경쟁 대비 차별점 (1~2문장)
-   - statement: 한 문장 포지셔닝 선언문
-5. targetProfile: 타겟 고객 프로필 (구조화)
-   - demographics: 인구통계 (연령대, 성별, 지역 등)
-   - occupation: 직업 또는 처한 상황
-   - needs: 핵심 니즈 (1~2문장)
-   - painPoints: 겪고 있는 문제/불편 (1~2문장)
-   - goals: 달성하려는 목표 (1~2문장)
-6. mission: 미션 — 지금 우리가 매일 하는 일을 행동 중심으로 (1문장, vision과 겹치지 않게)
-7. vision: 비전 — 5~10년 뒤 만들고 싶은 변화/상태를 미래형으로 (1문장, mission과 겹치지 않게)
-8. 코어 컬러 3개(primary/secondary/accent) 각각에 다음을 추가:
-   - meaning: 이 색이 전달하는 느낌·심리·연상 (1문장, 브랜드 성격과 연결)
-   - dos: 권장 사용처 2~3개 (배열, 구체적으로 "어디에 쓰는지")
-   - donts: 피해야 할 사용 2~3개 (배열, "이런 데는 쓰지 말 것")
-9. Neutral 팔레트: 50, 100, 200, 300, 400, 500, 900 (7개 HEX)
-   - Primary 컬러와 어울리는 톤으로 생성
-10. Semantic 컬러 (Primary 컬러와 조화로운 계열):
-    - success (초록 계열): #...
-    - error (빨강 계열): #...
-    - warning (노랑/주황 계열): #...
-    - info (파랑/청록 계열): #...
-11. usageRatio: 컬러 사용 비율 (4개 합계 정확히 100)
-    - 실제 UI에서는 neutral(배경·테두리·텍스트)이 가장 큰 비중을 차지함. neutral을 0으로 두지 말 것.
-    - 이 브랜드의 성격에 맞게 비율을 직접 판단해서 정할 것. 기계적으로 60/30/10을 쓰지 말 것.
-    - primary, secondary, accent, neutral 각각의 % (숫자)
-12. accessibility: 접근성 설명
-    - summary: 이 컬러 조합에서 가독성을 확보하기 위한 핵심 원칙 (1~2문장, 일반론 말고 이 팔레트에 맞게)
-    - notes: 구체적 권고사항 2~4개 (배열, "primary 위에는 흰 텍스트" 처럼 실제 조합 기준으로)
-13. pairings: 컬러 페어링 가이드 3~4개 (배열). 각 항목:
-    - label: 조합 이름 (예: "Primary 배경 + 흰 텍스트")
-    - bg: 배경 HEX
-    - fg: 전경(텍스트) HEX
-    - recommended: 권장이면 true, 피해야 할 조합이면 false
-    - note: 언제 쓰는지 또는 왜 피해야 하는지 (1문장)
-    - 권장 조합 2~3개와 피해야 할 조합 1개를 섞을 것
-14. Typography Scale (각 스타일의 size, weight, lineHeight, letterSpacing 정의):
-    - display, h1, h2, h3, h4, bodyL, bodyM, bodyS, caption, label
-
 === 출력 JSON ===
 {
   "brand": {
     "name": "${simpleData.brand.name}",
-    "nameReason": "선택 이유",
+    "nameReason": "브랜드명을 선택한 이유 (1~2문장)",
     "slogan": {
       "ko": "${simpleData.brand.slogan.ko}",
       "en": "${simpleData.brand.slogan.en}"
     },
     "personality": ${JSON.stringify(simpleData.brand.personality)},
-    "brandEssence": "존재이유",
+    "brandEssence": "브랜드의 존재이유와 지향하는 미래 (1문장)",
     "tone": "${simpleData.brand.tone}",
-    "coreTone": ["톤1", "톤2", "톤3"],
+    "coreTone": ["핵심 톤 키워드1", "톤2", "톤3"],
     "positioning": {
-      "category": "...",
-      "competitors": "...",
-      "differentiation": "...",
-      "statement": "..."
+      "category": "어떤 카테고리/시장에 속하는지",
+      "competitors": "주요 경쟁 상대 (1~2문장)",
+      "differentiation": "경쟁 대비 차별점 (1~2문장)",
+      "statement": "한 문장 포지셔닝 선언문"
     },
     "targetProfile": {
-      "demographics": "...",
-      "occupation": "...",
-      "needs": "...",
-      "painPoints": "...",
-      "goals": "..."
+      "demographics": "인구통계 (연령, 성별 등)",
+      "occupation": "직업/상황",
+      "needs": "핵심 니즈",
+      "painPoints": "겪고 있는 불편",
+      "goals": "목표"
     },
-    "mission": "...",
-    "vision": "..."
-  },
+    "mission": "지금 우리가 매일 하는 일 (1문장)",
+    "vision": "5~10년 뒤 만들고 싶은 미래 (1문장)"
+  }
+}
+
+순수 JSON만 반환하세요. 마크다운, 설명 텍스트 절대 금지.
+`
+
+    // 💡 2번 프롬프트: 디자인 시스템(컬러, 폰트) 데이터 전용
+    const designPrompt = `
+다음 Simple 브랜드 데이터를 바탕으로 Full '디자인 시스템' 데이터를 JSON으로 확장하세요.
+
+=== 기존 데이터 ===
+성격: ${simpleData.brand.personality.join(', ')}
+톤: ${simpleData.brand.tone}
+Primary Color: ${simpleData.colors.primary.hex}
+Secondary Color: ${simpleData.colors.secondary.hex}
+Accent Color: ${simpleData.colors.accent.hex}
+Heading Font: ${simpleData.typography.heading.name}
+Body Font: ${simpleData.typography.body.name}
+Mono Font: ${simpleData.typography.mono.name}
+
+=== 출력 JSON ===
+{
   "colors": {
     "primary": {
       "hex": "${simpleData.colors.primary.hex}",
       "rgb": "r, g, b",
       "name": "${simpleData.colors.primary.name}",
       "usage": "${simpleData.colors.primary.usage}",
-      "meaning": "이 색이 전달하는 느낌",
-      "dos": ["권장 사용처1", "권장 사용처2"],
-      "donts": ["피할 사용1", "피할 사용2"]
+      "meaning": "이 색이 전달하는 느낌 (1문장)",
+      "dos": ["권장 사용처1", "사용처2"],
+      "donts": ["피해야 할 사용1", "피할 사용2"]
     },
     "secondary": {
       "hex": "${simpleData.colors.secondary.hex}",
       "rgb": "r, g, b",
       "name": "${simpleData.colors.secondary.name}",
       "usage": "${simpleData.colors.secondary.usage}",
-      "meaning": "이 색이 전달하는 느낌",
-      "dos": ["권장 사용처1", "권장 사용처2"],
-      "donts": ["피할 사용1", "피할 사용2"]
+      "meaning": "이 색이 전달하는 느낌 (1문장)",
+      "dos": ["권장 사용처1", "사용처2"],
+      "donts": ["피해야 할 사용1", "피할 사용2"]
     },
     "accent": {
       "hex": "${simpleData.colors.accent.hex}",
       "rgb": "r, g, b",
       "name": "${simpleData.colors.accent.name}",
       "usage": "${simpleData.colors.accent.usage}",
-      "meaning": "이 색이 전달하는 느낌",
-      "dos": ["권장 사용처1", "권장 사용처2"],
-      "donts": ["피할 사용1", "피할 사용2"]
+      "meaning": "이 색이 전달하는 느낌 (1문장)",
+      "dos": ["권장 사용처1", "사용처2"],
+      "donts": ["피해야 할 사용1", "피할 사용2"]
     },
     "neutral": {
-      "50": "#...",
-      "100": "#...",
-      "200": "#...",
-      "300": "#...",
-      "400": "#...",
-      "500": "#...",
-      "900": "#..."
+      "50": "#...", "100": "#...", "200": "#...", "300": "#...", "400": "#...", "500": "#...", "900": "#..."
     },
     "semantic": {
-      "success": "#...",
-      "error": "#...",
-      "warning": "#...",
-      "info": "#..."
+      "success": "#...", "error": "#...", "warning": "#...", "info": "#..."
     },
     "usageRatio": {
-      "primary": 0,
-      "secondary": 0,
-      "accent": 0,
-      "neutral": 0
+      "primary": 0, "secondary": 0, "accent": 0, "neutral": 0
     },
     "accessibility": {
-      "summary": "...",
-      "notes": ["...", "..."]
+      "summary": "가독성을 확보하기 위한 핵심 원칙",
+      "notes": ["권고사항1", "권고사항2"]
     },
     "pairings": [
-      { "label": "조합 이름", "bg": "#......", "fg": "#......", "recommended": true, "note": "사용 맥락" },
-      { "label": "조합 이름", "bg": "#......", "fg": "#......", "recommended": false, "note": "피해야 할 이유" }
+      { "label": "조합 이름", "bg": "#...", "fg": "#...", "recommended": true, "note": "사용 맥락 또는 피할 이유" },
+      { "label": "조합 이름", "bg": "#...", "fg": "#...", "recommended": false, "note": "사용 맥락 또는 피할 이유" }
     ]
   },
   "typography": {
@@ -189,32 +144,46 @@ Mono Font: ${simpleData.typography.mono.name}
 순수 JSON만 반환하세요. 마크다운, 설명 텍스트 절대 금지.
 `
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite',
-      contents: expandPrompt,
-      config: {
-        maxOutputTokens: 20000,
-        temperature: 0.7,
-        responseMimeType: 'application/json',
-      },
-    })
+    // 💡 두 개의 프롬프트를 동시에 실행합니다. (토큰 분산)
+    const [brandRes, designRes] = await Promise.all([
+      ai.models.generateContent({
+        model: 'gemini-3.1-flash-lite',
+        contents: brandPrompt,
+        config: { maxOutputTokens: 8000, temperature: 0.7, responseMimeType: 'application/json' },
+      }),
+      ai.models.generateContent({
+        model: 'gemini-3.1-flash-lite',
+        contents: designPrompt,
+        config: { maxOutputTokens: 8000, temperature: 0.7, responseMimeType: 'application/json' },
+      })
+    ])
 
-    // 응답이 토큰 한도 등으로 잘렸는지 먼저 확인
-    const finishReason = response.candidates?.[0]?.finishReason
-    if (finishReason && finishReason !== 'STOP') {
-      console.error('Expand finishReason:', finishReason)
-      throw new Error(
-        `응답이 완료되지 못했습니다 (${finishReason}). maxOutputTokens를 늘리거나 출력 항목을 줄여주세요.`
-      )
+    // 에러 체크
+    const brandFinish = brandRes.candidates?.[0]?.finishReason
+    const designFinish = designRes.candidates?.[0]?.finishReason
+
+    if (brandFinish !== 'STOP' || designFinish !== 'STOP') {
+      console.error(`Token Limit Error: Brand(${brandFinish}), Design(${designFinish})`)
+      throw new Error('응답이 길어 중간에 잘렸습니다. 다시 시도해주세요.')
     }
 
-    const responseText = response.text
-    if (!responseText) {
+    if (!brandRes.text || !designRes.text) {
       throw new Error('빈 응답을 받았습니다.')
     }
 
-    const fullData = parseJsonLoose<BrandIdentity>(responseText)
+    // 각각 파싱
+    const parsedBrand = parseJsonLoose<{ brand: any }>(brandRes.text)
+    const parsedDesign = parseJsonLoose<{ colors: any, typography: any }>(designRes.text)
+
+    // 💡 백엔드에서 하나로 합쳐서 프론트엔드가 요구하는 완벽한 형태로 조립
+    const fullData: BrandIdentity = {
+      brand: parsedBrand.brand,
+      colors: parsedDesign.colors,
+      typography: parsedDesign.typography
+    }
+
     return Response.json(fullData)
+
   } catch (error) {
     console.error('Expand error:', error)
     return Response.json(
@@ -274,7 +243,6 @@ function parseJsonLoose<T>(raw: string): T {
   }
 
   if (end === -1) {
-    // 닫히지 않음 = 응답이 잘림
     throw new Error('JSON이 중간에 잘렸습니다. 출력 토큰 한도를 초과했을 수 있습니다.')
   }
 
