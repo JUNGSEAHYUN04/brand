@@ -193,29 +193,27 @@ Mono Font: ${simpleData.typography.mono.name}
       model: 'gemini-3.1-flash-lite',
       contents: expandPrompt,
       config: {
-        maxOutputTokens: 12288,
+        maxOutputTokens: 20000,
         temperature: 0.7,
         responseMimeType: 'application/json',
       },
     })
+
+    // 응답이 토큰 한도 등으로 잘렸는지 먼저 확인
+    const finishReason = response.candidates?.[0]?.finishReason
+    if (finishReason && finishReason !== 'STOP') {
+      console.error('Expand finishReason:', finishReason)
+      throw new Error(
+        `응답이 완료되지 못했습니다 (${finishReason}). maxOutputTokens를 늘리거나 출력 항목을 줄여주세요.`
+      )
+    }
 
     const responseText = response.text
     if (!responseText) {
       throw new Error('빈 응답을 받았습니다.')
     }
 
-    // responseMimeType이 JSON이라 보통 순수 JSON이지만, 혹시 몰라 안전하게 추출
-    let fullData: BrandIdentity
-    try {
-      fullData = JSON.parse(responseText)
-    } catch {
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/)
-      if (!jsonMatch) {
-        throw new Error('유효한 JSON을 찾을 수 없습니다.')
-      }
-      fullData = JSON.parse(jsonMatch[0])
-    }
-
+    const fullData = parseJsonLoose<BrandIdentity>(responseText)
     return Response.json(fullData)
   } catch (error) {
     console.error('Expand error:', error)
@@ -224,4 +222,62 @@ Mono Font: ${simpleData.typography.mono.name}
       { status: 500 }
     )
   }
+}
+
+// 모델 응답에서 JSON만 안전하게 추출/파싱
+function parseJsonLoose<T>(raw: string): T {
+  // 1) 그대로 시도
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    /* fall through */
+  }
+
+  // 2) 코드펜스 제거 후 시도
+  let text = raw
+    .replace(/```json/gi, '')
+    .replace(/```/g, '')
+    .trim()
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    /* fall through */
+  }
+
+  // 3) 첫 '{' 부터 균형 잡힌 '}' 까지만 추출 (문자열 내부 중괄호 무시)
+  const start = text.indexOf('{')
+  if (start === -1) {
+    throw new Error('유효한 JSON을 찾을 수 없습니다. (객체 시작 없음)')
+  }
+
+  let depth = 0
+  let inStr = false
+  let escaped = false
+  let end = -1
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i]
+    if (inStr) {
+      if (escaped) escaped = false
+      else if (ch === '\\') escaped = true
+      else if (ch === '"') inStr = false
+      continue
+    }
+    if (ch === '"') inStr = true
+    else if (ch === '{') depth++
+    else if (ch === '}') {
+      depth--
+      if (depth === 0) {
+        end = i
+        break
+      }
+    }
+  }
+
+  if (end === -1) {
+    // 닫히지 않음 = 응답이 잘림
+    throw new Error('JSON이 중간에 잘렸습니다. 출력 토큰 한도를 초과했을 수 있습니다.')
+  }
+
+  const candidate = text.slice(start, end + 1)
+  return JSON.parse(candidate) as T
 }
