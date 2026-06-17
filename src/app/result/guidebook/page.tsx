@@ -11,6 +11,7 @@ import Spacing from '@/components/guidebook/Spacing'
 import ComponentKit from '@/components/guidebook/ComponentKit'
 import FigmaExportButton from '@/components/guidebook/FigmaExportButton'
 import { Spacing as SpacingType } from '@/lib/types'
+import { buildDesignSystem } from '@/lib/component-tokens'
 
 const SECTIONS = [
   { id: 'brand',      label: '브랜드 전략' },
@@ -43,6 +44,7 @@ export default function GuidebookPage() {
 
   const { brand, colors, typography, logo } = brandData
   const spacing = brandData.spacing ?? DEFAULT_SPACING
+  const { foundation } = buildDesignSystem(colors, typography)
   const guidebook = { brand, colors, typography, spacing, logo }
 
   return (
@@ -139,7 +141,7 @@ export default function GuidebookPage() {
             {activeSection === 'brand'      && <BrandStrategy brand={brand} colors={colors} logo={logo} />}
             {activeSection === 'colors'     && <ColorSystem colors={colors} />}
             {activeSection === 'typography' && <Typography typography={typography} colors={colors} />}
-            {activeSection === 'spacing'    && <Spacing spacing={spacing} />}
+            {activeSection === 'spacing'    && <Spacing spacing={spacing} grid={foundation.grid} breakpoints={foundation.breakpoints} />}
             {activeSection === 'components' && <ComponentKit colors={colors} typography={typography} />}
           </main>
         </div>
@@ -150,7 +152,7 @@ export default function GuidebookPage() {
             {activeSection === 'brand'      && <BrandStrategy brand={brand} colors={colors} logo={logo} />}
             {activeSection === 'colors'     && <ColorSystem colors={colors} />}
             {activeSection === 'typography' && <Typography typography={typography} colors={colors} />}
-            {activeSection === 'spacing'    && <Spacing spacing={spacing} />}
+            {activeSection === 'spacing'    && <Spacing spacing={spacing} grid={foundation.grid} breakpoints={foundation.breakpoints} />}
             {activeSection === 'components' && <ComponentKit colors={colors} typography={typography} />}
           </div>
         </main>

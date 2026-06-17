@@ -13,7 +13,7 @@ export default function LoadingScreenPage() {
   useEffect(() => {
     if (status === 'idle') router.push('/create')
     if (status === 'error') router.push('/create')
-    if (status === 'complete') router.push('/result')
+    if (status === 'complete') router.push('/result/mix')
   }, [status, router])
 
   return (

@@ -2,7 +2,6 @@
 
 import { Brand, Colors, Logo } from '@/lib/types'
 import { useState } from 'react'
-import { Check } from 'lucide-react'
 
 interface Props {
   brand: Brand
@@ -18,7 +17,7 @@ const F7 = 'SCDream7, sans-serif'
 const C_MAIN = '#282B32'
 const C_SUB = 'rgba(40,43,50,0.8)'
 const C_MUTED = 'rgba(40,43,50,0.6)'
-const C_LABEL = 'rgba(40,43,50,0.8)'
+const C_LABEL = 'rgba(40,43,50,0.45)'
 const C_BORDER = 'rgba(40,43,50,0.2)'
 const C_BORDER_LIGHT = 'rgba(40,43,50,0.1)'
 
@@ -41,6 +40,8 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
     a.click()
   }
 
+  const LABEL_LS = '0.08em'
+
   return (
     <div>
       <div className="mb-6">
@@ -49,12 +50,12 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
       </div>
 
       {/* 브랜드 기본 */}
-      <section className="mb-14">
+      <section className="mb-10">
         <div className="p-8 rounded-2xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
           {logo?.url && (
             <div className="mb-8">
               <div className="flex items-center justify-between mb-3">
-                <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em' }}>LOGO</p>
+                <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS }}>LOGO</p>
                 <button onClick={handleLogoDownload}
                   onMouseEnter={() => setHoveredBtn(true)}
                   onMouseLeave={() => setHoveredBtn(false)}
@@ -69,6 +70,9 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
           )}
 
           <h3 style={{ fontFamily: F7, fontSize: '22px', color: C_MAIN, marginBottom: '12px' }}>{brand.name}</h3>
+          {brand.nameReason && (
+            <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED, lineHeight: '1.65', marginBottom: '16px' }}>{brand.nameReason}</p>
+          )}
           <div className="flex flex-wrap gap-2 mb-6">
             {brand.personality.map((keyword) => (
               <span key={keyword} style={{ fontFamily: F4, fontSize: '13px', color: C_SUB, background: 'rgba(40,43,50,0.05)', padding: '5px 14px', borderRadius: '99px' }}>
@@ -83,47 +87,143 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
               onMouseLeave={() => setHoveredSlogan(null)}
               onClick={() => handleCopySlogan('ko', brand.slogan.ko)}
               style={{ border: `1px solid ${hoveredSlogan === 'ko' ? 'rgba(40,43,50,0.45)' : C_BORDER}`, background: '#fff', transition: 'border-color 0.15s', cursor: 'pointer', userSelect: 'none' }}>
-              <div className="flex items-center justify-between">
-                <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '0px' }}>한국어 슬로건</p>
+              <div className="flex items-center justify-between mb-1">
+                <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS }}>한국어 슬로건</p>
                 <p style={{ fontFamily: F4, fontSize: '11px', color: C_MUTED, transition: 'opacity 0.15s', opacity: hoveredSlogan === 'ko' ? 1 : 0 }}>
                   {copiedSlogan === 'ko' ? '복사됨 ✓' : '클릭하여 복사'}
                 </p>
               </div>
-              <p style={{ fontFamily: F6, fontSize: '17px', color: C_MAIN }}>{brand.slogan.ko}</p>
+              <p style={{ fontFamily: F5, fontSize: '17px', color: C_MAIN }}>{brand.slogan.ko}</p>
             </div>
             <div className="p-5 rounded-xl"
               onMouseEnter={() => setHoveredSlogan('en')}
               onMouseLeave={() => setHoveredSlogan(null)}
               onClick={() => handleCopySlogan('en', brand.slogan.en)}
               style={{ border: `1px solid ${hoveredSlogan === 'en' ? 'rgba(40,43,50,0.45)' : C_BORDER}`, background: '#fff', transition: 'border-color 0.15s', cursor: 'pointer', userSelect: 'none' }}>
-              <div className="flex items-center justify-between">
-                <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '0px' }}>ENGLISH SLOGAN</p>
+              <div className="flex items-center justify-between mb-1">
+                <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS }}>ENGLISH SLOGAN</p>
                 <p style={{ fontFamily: F4, fontSize: '11px', color: C_MUTED, transition: 'opacity 0.15s', opacity: hoveredSlogan === 'en' ? 1 : 0 }}>
                   {copiedSlogan === 'en' ? '복사됨 ✓' : '클릭하여 복사'}
                 </p>
               </div>
-              <p style={{ fontFamily: F6, fontSize: '17px', color: C_MAIN }}>{brand.slogan.en}</p>
+              <p style={{ fontFamily: F5, fontSize: '17px', color: C_MAIN }}>{brand.slogan.en}</p>
             </div>
           </div>
 
           {brand.brandEssence && (
             <div className="pt-6 mt-6" style={{ borderTop: `1px solid ${C_BORDER_LIGHT}` }}>
-              <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>BRAND ESSENCE</p>
+              <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '12px' }}>BRAND ESSENCE</p>
               <p style={{ fontFamily: F4, fontSize: '15px', color: C_SUB, lineHeight: '1.7' }}>{brand.brandEssence}</p>
             </div>
           )}
         </div>
       </section>
 
+      {/* Mission & Vision */}
+      {(brand.mission || brand.vision) && (
+        <section className="mb-10">
+          <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '14px' }}>MISSION &amp; VISION</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {brand.mission && (
+              <div className="p-8 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
+                <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '12px' }}>MISSION</p>
+                <p style={{ fontFamily: F5, fontSize: '16px', color: C_SUB, lineHeight: '1.75' }}>{brand.mission}</p>
+              </div>
+            )}
+            {brand.vision && (
+              <div className="p-8 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
+                <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '12px' }}>VISION</p>
+                <p style={{ fontFamily: F5, fontSize: '16px', color: C_SUB, lineHeight: '1.75' }}>{brand.vision}</p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Positioning */}
+      {brand.positioning && (
+        <section className="mb-10">
+          <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '14px' }}>POSITIONING</p>
+          <div className="p-8 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
+            {brand.positioning.statement && (
+              <p style={{ fontFamily: F5, fontSize: '17px', color: C_MAIN, lineHeight: '1.75', marginBottom: '24px' }}>
+                {brand.positioning.statement}
+              </p>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-6" style={{ borderTop: `1px solid ${C_BORDER_LIGHT}` }}>
+              {brand.positioning.category && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>CATEGORY</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_SUB, lineHeight: '1.65' }}>{brand.positioning.category}</p>
+                </div>
+              )}
+              {brand.positioning.competitors && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>COMPETITORS</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_SUB, lineHeight: '1.65' }}>{brand.positioning.competitors}</p>
+                </div>
+              )}
+              {brand.positioning.differentiation && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>DIFFERENTIATION</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_SUB, lineHeight: '1.65' }}>{brand.positioning.differentiation}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Target Profile */}
+      {brand.targetProfile && (
+        <section className="mb-10">
+          <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '14px' }}>TARGET PROFILE</p>
+          <div className="p-8 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              {brand.targetProfile.demographics && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>DEMOGRAPHICS</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_MAIN, lineHeight: '1.65' }}>{brand.targetProfile.demographics}</p>
+                </div>
+              )}
+              {brand.targetProfile.occupation && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>OCCUPATION</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_MAIN, lineHeight: '1.65' }}>{brand.targetProfile.occupation}</p>
+                </div>
+              )}
+              {brand.targetProfile.needs && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>NEEDS</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_MAIN, lineHeight: '1.65' }}>{brand.targetProfile.needs}</p>
+                </div>
+              )}
+              {brand.targetProfile.painPoints && (
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>PAIN POINTS</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_MAIN, lineHeight: '1.65' }}>{brand.targetProfile.painPoints}</p>
+                </div>
+              )}
+              {brand.targetProfile.goals && (
+                <div className="md:col-span-2 pt-6" style={{ borderTop: `1px solid ${C_BORDER_LIGHT}` }}>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '8px' }}>GOALS</p>
+                  <p style={{ fontFamily: F4, fontSize: '14px', color: C_MAIN, lineHeight: '1.65' }}>{brand.targetProfile.goals}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Core Values */}
       {brand.coreValues && brand.coreValues.length > 0 && (
-        <section className="mb-14">
-          <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>CORE VALUES</p>
+        <section className="mb-10">
+          <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '14px' }}>CORE VALUES</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {brand.coreValues.map((value, index) => (
               <div key={index} className="p-6 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
                 <p style={{ fontFamily: F4, fontSize: '12px', color: C_MUTED, marginBottom: '10px' }}>0{index + 1}</p>
-                <p style={{ fontFamily: F6, fontSize: '15px', color: C_MAIN, marginBottom: '8px' }}>{value.title}</p>
+                <p style={{ fontFamily: F5, fontSize: '15px', color: C_MAIN, marginBottom: '8px' }}>{value.title}</p>
                 <p style={{ fontFamily: F4, fontSize: '13px', color: C_SUB, lineHeight: '1.65' }}>{value.description}</p>
               </div>
             ))}
@@ -132,13 +232,13 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
       )}
 
       {/* Tone & Manner */}
-      <section className="mb-14">
-        <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>TONE & MANNER</p>
+      <section className="mb-10">
+        <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '14px' }}>TONE &amp; MANNER</p>
         <div className="p-8 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
           <p style={{ fontFamily: F4, fontSize: '14px', color: C_SUB, lineHeight: '1.75', marginBottom: '24px' }}>{brand.tone}</p>
           {brand.coreTone && brand.coreTone.length > 0 && (
             <div className="pt-6" style={{ borderTop: `1px solid ${C_BORDER_LIGHT}` }}>
-              <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '12px' }}>CORE TONE</p>
+              <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '12px' }}>CORE TONE</p>
               <div className="flex flex-wrap gap-2">
                 {brand.coreTone.map((tone) => (
                   <span key={tone} style={{ fontFamily: F4, fontSize: '13px', color: C_SUB, padding: '6px 16px', borderRadius: '99px', border: `1px solid ${C_BORDER}` }}>
@@ -153,18 +253,18 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
 
       {/* Visual Direction */}
       {(brand.designDirection || brand.designPrinciples) && (
-        <section className="mb-14">
-          <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>VISUAL DIRECTION</p>
+        <section className="mb-10">
+          <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '14px' }}>VISUAL DIRECTION</p>
           <div className="p-8 rounded-xl" style={{ border: `1px solid ${C_BORDER}`, background: '#fff' }}>
             {brand.designDirection && (
               <div className="mb-6">
-                <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '10px' }}>DESIGN DIRECTION</p>
+                <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '10px' }}>DESIGN DIRECTION</p>
                 <p style={{ fontFamily: F4, fontSize: '14px', color: C_SUB, lineHeight: '1.75' }}>{brand.designDirection}</p>
               </div>
             )}
             {brand.designPrinciples && brand.designPrinciples.length > 0 && (
               <div className="pt-6" style={{ borderTop: `1px solid ${C_BORDER_LIGHT}` }}>
-                <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>DESIGN PRINCIPLES</p>
+                <p style={{ fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '16px' }}>DESIGN PRINCIPLES</p>
                 <div className="space-y-4">
                   {brand.designPrinciples.map((principle, index) => (
                     <div key={index} className="flex items-start gap-4">
@@ -176,38 +276,6 @@ export default function BrandStrategy({ brand, colors, logo }: Props) {
               </div>
             )}
           </div>
-        </section>
-      )}
-
-      {/* Brand Name 후보 */}
-      {brand.nameCandidates && brand.nameCandidates.length > 0 && (
-        <section>
-          <p style={{ fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>BRAND NAME CANDIDATES</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {brand.nameCandidates.map((name, index) => {
-              const isSelected = name.trim() === brand.name.trim()
-              return (
-                <div key={name} className="p-5 rounded-xl" style={{
-                  border: isSelected ? `1px solid ${C_BORDER}` : `1px solid ${C_BORDER_LIGHT}`,
-                  background: isSelected ? 'rgba(40,43,50,0.03)' : '#fff',
-                }}>
-                  <div className="flex items-center gap-1.5" style={{ marginBottom: '8px' }}>
-                    {isSelected && <Check size={11} strokeWidth={2.5} style={{ color: C_LABEL, flexShrink: 0 }} />}
-                    <span style={{ fontFamily: F4, fontSize: '11px', color: C_LABEL, letterSpacing: '0.06em' }}>
-                      {isSelected ? '선택됨' : `후보 ${index + 1}`}
-                    </span>
-                  </div>
-                  <p style={{ fontFamily: F7, fontSize: '19px', color: C_MAIN }}>{name}</p>
-                </div>
-              )
-            })}
-          </div>
-          {brand.nameReason && (
-            <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED, marginTop: '16px', lineHeight: '1.65' }}>
-              <span style={{ fontFamily: F5, color: C_MAIN }}>선택 이유: </span>
-              {brand.nameReason}
-            </p>
-          )}
         </section>
       )}
     </div>

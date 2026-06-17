@@ -136,7 +136,6 @@ export function generateFoundationTokens(colors: Colors, typography: Typography)
       dropdown: 1000,
       sticky:   1100,
       modal:    1200,
-      toast:    1300,
     },
     typography: {
       fonts: {
@@ -179,6 +178,18 @@ export function generateFoundationTokens(colors: Colors, typography: Typography)
       lg:  1024,
       xl:  1280,
       '2xl': 1536,
+    },
+    grid: {
+      columns:     12,
+      gutter:      24,
+      margin:      24,
+      maxWidth:    1200,
+      // 반응형 컬럼 수 (breakpoint별)
+      responsive: {
+        sm: 4,
+        md: 8,
+        lg: 12,
+      },
     },
   }
 }
@@ -278,7 +289,7 @@ export function generateComponentTokens(
   foundation: ReturnType<typeof generateFoundationTokens>
 ) {
   const { primary, error, success, warning, info, text, bg, border, focusRing, radius, surface } = semantic
-  const { elevation, spacing, controlSize } = foundation
+  const { elevation, spacing, controlSize, color, motion, zIndex } = foundation
 
   return {
     // ── Button ──────────────────────────────
@@ -434,6 +445,64 @@ export function generateComponentTokens(
         md: spacing[4],
         lg: spacing[6],
       },
+    },
+
+    // ── Tabs ─────────────────────────────────
+    tabs: {
+      list:        { bg: 'transparent', border: border.default },
+      tab: {
+        default:   { bg: 'transparent',  text: text.secondary, border: 'transparent' },
+        hover:     { bg: bg.subtle,      text: text.primary,   border: 'transparent' },
+        active:    { bg: 'transparent',  text: primary.default, border: primary.default },
+        disabled:  { bg: 'transparent',  text: text.disabled,  border: 'transparent' },
+      },
+      indicator:   { color: primary.default, height: 2 },
+      panel:       { bg: surface.base, text: text.secondary },
+      sizes: {
+        sm: { height: controlSize.sm, paddingX: spacing[3], fontSize: 13 },
+        md: { height: controlSize.md, paddingX: spacing[4], fontSize: 14 },
+      },
+    },
+
+    // ── Dropdown ─────────────────────────────
+    dropdown: {
+      trigger:     { bg: bg.default, text: text.primary, border: border.default, borderRadius: radius.input },
+      menu:        { bg: surface.overlay, border: border.default, shadow: elevation[2], borderRadius: radius.card, zIndex: zIndex.dropdown },
+      item: {
+        default:   { bg: 'transparent', text: text.primary },
+        hover:     { bg: bg.subtle,     text: text.primary },
+        active:    { bg: primary.subtle, text: primary.pressed },
+        disabled:  { bg: 'transparent', text: text.disabled },
+      },
+      divider:     { color: border.default },
+      sizes: {
+        item: { paddingX: spacing[4], paddingY: spacing[2], fontSize: 14 },
+      },
+    },
+
+    // ── Modal ────────────────────────────────
+    modal: {
+      overlay:     { bg: 'rgba(0, 0, 0, 0.45)', zIndex: zIndex.modal },
+      container:   { bg: surface.overlay, border: 'transparent', shadow: elevation[3], borderRadius: radius.card },
+      header:      { text: text.primary, border: border.default },
+      body:        { text: text.secondary },
+      footer:      { border: border.default },
+      closeIcon:   { color: text.secondary, hover: text.primary },
+      widths: {
+        sm: 400,
+        md: 560,
+        lg: 720,
+      },
+      padding: spacing[6],
+    },
+
+    // ── Empty State ──────────────────────────
+    emptyState: {
+      container:   { bg: 'transparent', text: text.secondary },
+      icon:        { bg: bg.subtle, color: text.secondary },
+      title:       { text: text.primary },
+      description: { text: text.secondary },
+      padding:     spacing[10],
     },
   }
 }

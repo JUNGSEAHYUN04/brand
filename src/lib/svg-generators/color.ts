@@ -8,7 +8,7 @@ function xe(s: string): string {
 const C_MAIN         = '#282B32'
 const C_SUB          = 'rgba(40,43,50,0.8)'
 const C_MUTED        = 'rgba(40,43,50,0.6)'
-const C_LABEL        = 'rgba(40,43,50,0.75)'
+const C_LABEL        = 'rgba(40,43,50,0.45)'
 const C_BORDER       = 'rgba(40,43,50,0.2)'
 const C_BORDER_LIGHT = 'rgba(40,43,50,0.1)'
 const C_BG_SOFT      = 'rgba(40,43,50,0.03)'

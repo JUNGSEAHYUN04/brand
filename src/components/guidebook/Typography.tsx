@@ -13,15 +13,23 @@ const F5 = 'SCDream5, sans-serif'
 const F6 = 'SCDream6, sans-serif'
 const F7 = 'SCDream7, sans-serif'
 
-const C_MAIN = 'rgba(40,43,50,0.9)'
-const C_SUB = 'rgba(40,43,50,0.75)'
-const C_MUTED = 'rgba(40,43,50,0.55)'
-const C_LABEL = 'rgba(40,43,50,0.75)'
+const C_MAIN = '#282B32'
+const C_SUB = 'rgba(40,43,50,0.8)'
+const C_MUTED = 'rgba(40,43,50,0.6)'
+const C_LABEL = 'rgba(40,43,50,0.45)'
 const C_BORDER = 'rgba(40,43,50,0.2)'
 const C_BORDER_LIGHT = 'rgba(40,43,50,0.1)'
 
+const C_OK = '#16A34A'
+const C_NO = '#DC2626'
+
+const LABEL_LS = '0.08em'
+
 export default function Typography({ typography, colors }: Props) {
   const { fonts, scale } = typography
+  const fontReasons = (typography as any).fontReasons as
+    | { heading?: string; body?: string; mono?: string }
+    | undefined
 
   useEffect(() => {
     const fontNames = [fonts.heading, fonts.body, fonts.mono]
@@ -52,6 +60,34 @@ export default function Typography({ typography, colors }: Props) {
     { label: 'Label', key: 'label', data: scale.label, sample: 'LABEL TEXT' },
   ]
 
+  // 폰트별 역할 + 선택 이유 + 사용 가이드
+  const fontRoles = [
+    {
+      role: 'Heading',
+      font: fonts.heading,
+      reason: fontReasons?.heading,
+      use: '제목, 헤드라인, 강조 문구',
+      dos: ['페이지 제목·섹션 제목', '짧고 굵게 시선을 잡아야 할 곳'],
+      donts: ['긴 본문 전체', '작은 캡션·라벨'],
+    },
+    {
+      role: 'Body',
+      font: fonts.body,
+      reason: fontReasons?.body,
+      use: '본문, 설명, 일반 텍스트',
+      dos: ['문단·설명 텍스트', '가독성이 중요한 모든 영역'],
+      donts: ['큰 제목에 단독 사용', '코드·숫자 정렬이 필요한 곳'],
+    },
+    {
+      role: 'Mono',
+      font: fonts.mono,
+      reason: fontReasons?.mono,
+      use: '코드, 숫자, 데이터',
+      dos: ['코드 스니펫·HEX 값', '표의 숫자 정렬'],
+      donts: ['일반 본문', '감성적인 헤드라인'],
+    },
+  ]
+
   return (
     <div>
       <div style={{ marginBottom: '40px' }}>
@@ -59,25 +95,24 @@ export default function Typography({ typography, colors }: Props) {
         <h2 style={{ fontFamily: F7, fontSize: '32px', color: C_MAIN }}>타이포그래피</h2>
       </div>
 
-      {/* 폰트 패밀리 */}
+      {/* 폰트 패밀리 + 선택 이유 + 사용 가이드 */}
       <section style={{ marginBottom: '56px' }}>
-        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>FONT FAMILY</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-          {[
-            { role: 'Heading', font: fonts.heading, sample: 'Aa Bb Cc' },
-            { role: 'Body', font: fonts.body, sample: 'Aa Bb Cc' },
-            { role: 'Mono', font: fonts.mono, sample: 'Aa Bb Cc' },
-          ].map(({ role, font, sample }) => (
+        <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '16px' }}>FONT FAMILY</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+          {fontRoles.map(({ role, font, reason, use, dos, donts }) => (
             <div key={role} style={{ padding: '24px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff' }}>
-              <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED, marginBottom: '16px' }}>{role}</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '16px' }}>
+                <p style={{ fontFamily: F6, fontSize: '14px', color: C_MAIN }}>{role}</p>
+                <p style={{ fontFamily: F4, fontSize: '12px', color: C_MUTED }}>{use}</p>
+              </div>
               <p style={{
                 fontFamily: font,
                 fontSize: '36px',
                 fontWeight: 'bold',
                 color: colors.primary.hex,
-                marginBottom: '12px',
+                marginBottom: '10px',
               }}>
-                {sample}
+                Aa Bb Cc
               </p>
               <p style={{ fontFamily: F5, fontSize: '14px', color: C_MAIN, marginBottom: '8px' }}>{font}</p>
               <p style={{ fontFamily: font, fontSize: '13px', color: C_MUTED, lineHeight: '1.8' }}>
@@ -85,6 +120,27 @@ export default function Typography({ typography, colors }: Props) {
                 abcdefghijklmnopqrstuvwxyz<br />
                 0123456789
               </p>
+
+              {reason && (
+                <p style={{ fontFamily: F4, fontSize: '13px', color: C_SUB, lineHeight: '1.65', marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${C_BORDER_LIGHT}` }}>
+                  {reason}
+                </p>
+              )}
+
+              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${C_BORDER_LIGHT}`, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_OK, letterSpacing: '0.05em', marginBottom: '6px' }}>DO</p>
+                  {dos.map((d, i) => (
+                    <p key={i} style={{ fontFamily: F4, fontSize: '12px', color: C_SUB, lineHeight: '1.5', marginBottom: '3px' }}>· {d}</p>
+                  ))}
+                </div>
+                <div>
+                  <p style={{ fontFamily: F5, fontSize: '11px', color: C_NO, letterSpacing: '0.05em', marginBottom: '6px' }}>DON&apos;T</p>
+                  {donts.map((d, i) => (
+                    <p key={i} style={{ fontFamily: F4, fontSize: '12px', color: C_SUB, lineHeight: '1.5', marginBottom: '3px' }}>· {d}</p>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -92,7 +148,7 @@ export default function Typography({ typography, colors }: Props) {
 
       {/* 타입 스케일 */}
       <section style={{ marginBottom: '56px' }}>
-        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>TYPE SCALE</p>
+        <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '16px' }}>TYPE SCALE</p>
         <div style={{ border: `1px solid ${C_BORDER}`, borderRadius: '16px', overflow: 'hidden', background: '#fff' }}>
           {scaleEntries.map(({ label, data, sample }, index) => (
             <div
@@ -130,9 +186,54 @@ export default function Typography({ typography, colors }: Props) {
         </div>
       </section>
 
+      {/* 위계 사용 가이드 */}
+      <section style={{ marginBottom: '56px' }}>
+        <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '16px' }}>HIERARCHY GUIDE</p>
+        <div style={{ padding: '32px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff' }}>
+          {[
+            { tier: 'Display', where: '랜딩 히어로, 표지 — 페이지당 1회, 가장 강한 첫인상' },
+            { tier: 'H1 · H2', where: '페이지 제목과 주요 섹션 제목. 문서 구조의 뼈대' },
+            { tier: 'H3 · H4', where: '하위 섹션·카드 제목. 본문 그룹을 나누는 소제목' },
+            { tier: 'Body L/M/S', where: '본문. L은 리드 문단, M은 기본 본문, S는 보조 설명' },
+            { tier: 'Caption · Label', where: '이미지 설명, 폼 라벨, 메타 정보 등 가장 작은 단위' },
+          ].map((row, i, arr) => (
+            <div key={row.tier} style={{
+              display: 'flex', alignItems: 'flex-start', gap: '20px',
+              paddingTop: i === 0 ? 0 : '16px',
+              paddingBottom: i === arr.length - 1 ? 0 : '16px',
+              borderBottom: i === arr.length - 1 ? 'none' : `1px solid ${C_BORDER_LIGHT}`,
+            }}>
+              <p style={{ fontFamily: F6, fontSize: '14px', color: C_MAIN, width: '130px', flexShrink: 0 }}>{row.tier}</p>
+              <p style={{ fontFamily: F4, fontSize: '14px', color: C_SUB, lineHeight: '1.6' }}>{row.where}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 자간 · 행간 가이드 */}
+      <section style={{ marginBottom: '56px' }}>
+        <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '16px' }}>SPACING GUIDE</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+          <div style={{ padding: '28px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff' }}>
+            <p style={{ fontFamily: F6, fontSize: '14px', color: C_MAIN, marginBottom: '6px' }}>자간 (Letter Spacing)</p>
+            <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED, lineHeight: '1.6', marginBottom: '20px' }}>글자 크기가 클수록 자간을 좁혀 단단하게, 작을수록 살짝 넓혀 또렷하게.</p>
+            <p style={{ fontFamily: fonts.heading, fontSize: '28px', fontWeight: 700, color: C_MAIN, letterSpacing: '-0.02em', marginBottom: '4px' }}>큰 제목 −2%</p>
+            <p style={{ fontFamily: F4, fontSize: '12px', color: C_MUTED, marginBottom: '16px' }}>display · h1 → letter-spacing 좁게</p>
+            <p style={{ fontFamily: fonts.body, fontSize: '12px', fontWeight: 500, color: C_MAIN, letterSpacing: '0.08em', marginBottom: '4px' }}>L A B E L  +8%</p>
+            <p style={{ fontFamily: F4, fontSize: '12px', color: C_MUTED }}>label · caption → letter-spacing 넓게</p>
+          </div>
+          <div style={{ padding: '28px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff' }}>
+            <p style={{ fontFamily: F6, fontSize: '14px', color: C_MAIN, marginBottom: '6px' }}>행간 (Line Height)</p>
+            <p style={{ fontFamily: F4, fontSize: '13px', color: C_MUTED, lineHeight: '1.6', marginBottom: '20px' }}>제목은 행간을 좁게 붙여 덩어리감을, 본문은 넓혀 읽기 편하게.</p>
+            <p style={{ fontFamily: fonts.heading, fontSize: '18px', fontWeight: 600, color: C_MAIN, lineHeight: 1.2, marginBottom: '12px' }}>제목은 행간 1.2<br />두 줄도 단단하게</p>
+            <p style={{ fontFamily: fonts.body, fontSize: '14px', color: C_SUB, lineHeight: 1.8 }}>본문은 행간 1.7~1.8로 넉넉하게. 여러 줄이 이어질 때 눈이 다음 줄을 편하게 따라갈 수 있습니다.</p>
+          </div>
+        </div>
+      </section>
+
       {/* 텍스트 조합 프리뷰 */}
       <section>
-        <p style={{ fontFamily: F4, fontSize: '13px', color: C_LABEL, letterSpacing: '0.08em', marginBottom: '16px' }}>PREVIEW</p>
+        <p style={{ fontFamily: F4, fontSize: '12px', color: C_LABEL, letterSpacing: LABEL_LS, marginBottom: '16px' }}>PREVIEW</p>
         <div style={{ padding: '40px', border: `1px solid ${C_BORDER}`, borderRadius: '16px', background: '#fff' }}>
           <p style={{
             fontFamily: fonts.heading,

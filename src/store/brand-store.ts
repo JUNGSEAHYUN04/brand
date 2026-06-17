@@ -1,6 +1,19 @@
 import { create } from 'zustand'
-import { BrandIdentity, FormValues, GenerateStatus, PartialBrandIdentity } from '@/lib/types'
+import { BrandIdentity, BrandIdentitySimple, FormValues, GenerateStatus, PartialBrandIdentity } from '@/lib/types'
 import { StreamParser } from '@/lib/stream-parser'
+
+interface Selection {
+  brandNameIndex: number
+  sloganIndex: number
+  personalityIndex: number
+  toneIndex: number
+  headingFontIndex: number
+  bodyFontIndex: number
+  monoFontIndex: number
+  primaryColorIndex: number
+  secondaryColorIndex: number
+  accentColorIndex: number
+}
 
 interface BrandStore {
   formValues: FormValues
@@ -11,6 +24,13 @@ interface BrandStore {
   setPartialData: (data: PartialBrandIdentity) => void
   brandData: BrandIdentity | null
   setBrandData: (data: BrandIdentity) => void
+  candidates: BrandIdentitySimple[]
+  setCandidates: (data: BrandIdentitySimple[]) => void
+  selected: Selection
+  setSelected: (selected: Selection) => void
+  isMixed: boolean
+  setIsMixed: (value: boolean) => void
+  getMixedBrand: () => BrandIdentitySimple | null
   error: string | null
   setError: (error: string | null) => void
   parser: StreamParser
@@ -22,28 +42,6 @@ const initialFormValues: FormValues = {
   brandName: '',
   keywords: [],
   industry: '',
-}
-
-async function generateLogo(
-  brand: BrandIdentity['brand'],
-  colors: BrandIdentity['colors'],
-  industry: string
-): Promise<{ url: string; concept: string; style: string } | null> {
-  try {
-    const res = await fetch('/api/generate-logo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ brand, colors, industry }),
-    })
-    if (!res.ok) {
-      console.warn('로고 생성 실패 — 결과 페이지는 정상 표시')
-      return null
-    }
-    return await res.json()
-  } catch {
-    console.warn('로고 생성 오류 — 결과 페이지는 정상 표시')
-    return null
-  }
 }
 
 export const useBrandStore = create<BrandStore>((set, get) => ({
@@ -61,6 +59,63 @@ export const useBrandStore = create<BrandStore>((set, get) => ({
 
   brandData: null,
   setBrandData: (data) => set({ brandData: data }),
+
+  candidates: [],
+  setCandidates: (data) => set({ candidates: data }),
+
+  selected: {
+    brandNameIndex: 0,
+    sloganIndex: 0,
+    personalityIndex: 0,
+    toneIndex: 0,
+    headingFontIndex: 0,
+    bodyFontIndex: 0,
+    monoFontIndex: 0,
+    primaryColorIndex: 0,
+    secondaryColorIndex: 0,
+    accentColorIndex: 0,
+  },
+  setSelected: (selected) => set({ selected }),
+
+  isMixed: false,
+  setIsMixed: (value) => set({ isMixed: value }),
+
+  getMixedBrand: (): BrandIdentitySimple | null => {
+    const { candidates, selected } = get()
+    if (candidates.length === 0) return null
+
+    const baseBrandCandidate = candidates[selected.brandNameIndex] || candidates[0]
+    const sloganCandidate = candidates[selected.sloganIndex] || candidates[0]
+    const personalityCandidate = candidates[selected.personalityIndex] || candidates[0]
+    const toneCandidate = candidates[selected.toneIndex] || candidates[0]
+    const headingCandidate = candidates[selected.headingFontIndex] || candidates[0]
+    const bodyCandidate = candidates[selected.bodyFontIndex] || candidates[0]
+    const monoCandidate = candidates[selected.monoFontIndex] || candidates[0]
+    const primaryCandidate = candidates[selected.primaryColorIndex] || candidates[0]
+    const secondaryCandidate = candidates[selected.secondaryColorIndex] || candidates[0]
+    const accentCandidate = candidates[selected.accentColorIndex] || candidates[0]
+
+    return {
+      brand: {
+        ...baseBrandCandidate.brand,
+        name: baseBrandCandidate.brand.name,
+        slogan: sloganCandidate.brand.slogan,
+        personality: personalityCandidate.brand.personality,
+        tone: toneCandidate.brand.tone,
+      },
+      logo: baseBrandCandidate.logo,
+      colors: {
+        primary: primaryCandidate.colors.primary,
+        secondary: secondaryCandidate.colors.secondary,
+        accent: accentCandidate.colors.accent,
+      },
+      typography: {
+        heading: headingCandidate.typography.heading,
+        body: bodyCandidate.typography.body,
+        mono: monoCandidate.typography.mono,
+      },
+    }
+  },
 
   error: null,
   setError: (error) => set({ error }),
@@ -100,27 +155,64 @@ export const useBrandStore = create<BrandStore>((set, get) => ({
         }
       }
 
-      const result = parser.isComplete()
-        ? (parser.getResult() as BrandIdentity)
-        : (() => {
-            try {
-              return JSON.parse(parser.getBuffer()) as BrandIdentity
-            } catch {
-              throw new Error('데이터 파싱에 실패했습니다. 다시 시도해주세요.')
-            }
-          })()
+      const buffer = parser.getBuffer().trim()
+      const extractJson = (raw: string): string | null => {
+        const start = raw.indexOf('{')
+        const end = raw.lastIndexOf('}')
+        if (start === -1 || end === -1 || end <= start) return null
 
-      // 브랜드 데이터 먼저 완료 처리 — 로고 없어도 결과 페이지 진입
-      set({ status: 'complete', brandData: result, partialData: result })
-
-      // 로고는 백그라운드에서 별도 시도
-      const logo = await generateLogo(result.brand, result.colors, formValues.industry || '')
-      if (logo) {
-        const updatedData = {
-          ...result,
-          logo: { url: logo.url, concept: logo.concept || '', style: logo.style || 'symbol' },
+        const candidate = raw.slice(start, end + 1).trim()
+        try {
+          JSON.parse(candidate)
+          return candidate
+        } catch {
+          return null
         }
-        set({ brandData: updatedData, partialData: updatedData })
+      }
+
+      let result: BrandIdentitySimple | BrandIdentitySimple[]
+
+      if (buffer.startsWith('[')) {
+        try {
+          result = JSON.parse(buffer) as BrandIdentitySimple[]
+        } catch {
+          const jsonStrings = buffer.slice(1, -1).split(',')
+          const parsed: BrandIdentitySimple[] = []
+          for (const str of jsonStrings) {
+            const cleanJson = extractJson(str)
+            if (cleanJson) {
+              try {
+                parsed.push(JSON.parse(cleanJson) as BrandIdentitySimple)
+              } catch {
+                // 이 객체는 건너뛰기
+              }
+            }
+          }
+          if (parsed.length === 0) {
+            throw new Error('데이터 파싱에 실패했습니다. 다시 시도해주세요.')
+          }
+          result = parsed
+        }
+      } else if (parser.isComplete()) {
+        result = parser.getResult() as BrandIdentitySimple
+      } else {
+        try {
+          result = JSON.parse(buffer) as BrandIdentitySimple
+        } catch {
+          const cleanJson = extractJson(buffer)
+          if (!cleanJson) {
+            throw new Error('데이터 파싱에 실패했습니다. 다시 시도해주세요.')
+          }
+          result = JSON.parse(cleanJson) as BrandIdentitySimple
+        }
+      }
+
+      if (Array.isArray(result)) {
+        const candidates = result as BrandIdentitySimple[]
+        set({ status: 'complete', brandData: candidates[0] as any, partialData: candidates[0], candidates })
+      } else {
+        const single = result as BrandIdentitySimple
+        set({ status: 'complete', brandData: single as any, partialData: single })
       }
 
     } catch (err) {
@@ -134,6 +226,7 @@ export const useBrandStore = create<BrandStore>((set, get) => ({
     set({
       formValues: initialFormValues,
       status: 'idle',
+      isMixed: false,
       partialData: {},
       brandData: null,
       error: null,

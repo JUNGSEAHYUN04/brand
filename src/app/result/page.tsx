@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useEffect } from 'react'
@@ -23,57 +24,119 @@ export default function ResultPage() {
 
   const isSummaryReady = status === 'summary' || status === 'complete'
   const isComplete = status === 'complete'
-  const data = partialData
+  const data = brandData
+console.log('candidates:', brandData)
+
+
+  if (!data) {
+    return (
+      <div className="min-h-screen" style={{ background: '#f9f9f9' }}>
+        <header
+          className="px-10 md:px-20 py-5 flex items-center justify-between"
+          style={{
+            background: '#fff',
+            borderBottom: '1px solid rgba(40,43,50,0.08)',
+          }}
+        >
+          <Link
+            href="/"
+            style={{
+              fontFamily: 'Oswald-SemiBold, sans-serif',
+              fontSize: '20px',
+              color: '#282B32',
+              textDecoration: 'none',
+            }}
+          >
+            brandkit
+          </Link>
+        </header>
+        <div
+          className="flex items-center justify-center"
+          style={{ height: 'calc(100vh - 80px)' }}
+        >
+          <p
+            style={{
+              fontFamily: 'SCDream4, sans-serif',
+              fontSize: '16px',
+              color: 'rgba(40,43,50,0.6)',
+            }}
+          >
+            브랜드 데이터를 불러오는 중...
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen" style={{ background: '#f9f9f9' }}>
-
-      {/* 헤더 */}
       <header
         className="px-10 md:px-20 py-5 flex items-center justify-between"
-        style={{ background: '#fff', borderBottom: '1px solid rgba(40,43,50,0.08)' }}
+        style={{
+          background: '#fff',
+          borderBottom: '1px solid rgba(40,43,50,0.08)',
+        }}
       >
-        <Link href="/" style={{ fontFamily: 'Oswald-SemiBold, sans-serif', fontSize: '20px', color: '#282B32', textDecoration: 'none' }}>
+        <Link
+          href="/"
+          style={{
+            fontFamily: 'Oswald-SemiBold, sans-serif',
+            fontSize: '20px',
+            color: '#282B32',
+            textDecoration: 'none',
+          }}
+        >
           brandkit
         </Link>
         <button
-          onClick={() => { reset(); router.push('/create') }}
-          style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '13px', color: 'rgba(40,43,50,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}
+          onClick={() => {
+            reset()
+            router.push('/create')
+          }}
+          style={{
+            fontFamily: 'SCDream4, sans-serif',
+            fontSize: '13px',
+            color: 'rgba(40,43,50,0.45)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+          }}
         >
           ← 다시 만들기
         </button>
       </header>
 
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 md:py-16">
-
         {isSummaryReady && (
           <>
-            {/* 브랜드명 */}
             {data.brand && (
               <div className="mb-10 md:mb-14 text-center">
-                <p style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '12px', color: 'rgba(40,43,50,0.4)', letterSpacing: '0.1em', marginBottom: '12px' }}>
+                <p
+                  style={{
+                    fontFamily: 'SCDream4, sans-serif',
+                    fontSize: '12px',
+                    color: 'rgba(40,43,50,0.4)',
+                    letterSpacing: '0.1em',
+                    marginBottom: '12px',
+                  }}
+                >
                   BRAND IDENTITY
                 </p>
-                <h1 style={{ fontFamily: 'Oswald-SemiBold, sans-serif', fontSize: 'clamp(40px, 6vw, 64px)', fontWeight: 600, color: '#282B32', lineHeight: 1.05, marginBottom: '16px' }}>
+                <h1
+                  style={{
+                    fontFamily: 'Oswald-SemiBold, sans-serif',
+                    fontSize: 'clamp(40px, 6vw, 64px)',
+                    fontWeight: 600,
+                    color: '#282B32',
+                    lineHeight: 1.05,
+                    marginBottom: '16px',
+                  }}
+                >
                   {data.brand.name}
                 </h1>
-                {data.brand.nameCandidates && (
-                  <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-                    <p style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '13px', color: 'rgba(40,43,50,0.45)' }}>후보 브랜드명:</p>
-                    {data.brand.nameCandidates.map((name: string) => (
-                      <span
-                        key={name}
-                        style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '13px', color: 'rgba(40,43,50,0.6)', background: 'rgba(40,43,50,0.06)', padding: '4px 14px', borderRadius: '99px' }}
-                      >
-                        {name}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             )}
 
-            {/* 카드 그리드 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
               <div className="col-span-1 md:col-span-2">
                 {data.logo && <LogoCard logo={data.logo} brand={data.brand} />}
@@ -100,7 +163,6 @@ export default function ResultPage() {
               </div>
             </div>
 
-            {/* 가이드북 버튼 */}
             <div className="flex justify-center">
               <button
                 onClick={() => router.push('/result/guidebook')}
@@ -127,11 +189,27 @@ export default function ResultPage() {
   )
 }
 
-function SkeletonCard({ label, height }: { label: string; height: string }) {
+function SkeletonCard({
+  label,
+  height,
+}: {
+  label: string
+  height: string
+}) {
   return (
-    <div className={`${height} bg-white rounded-2xl p-6 flex flex-col justify-between animate-pulse`}
-      style={{ border: '1px solid rgba(40,43,50,0.08)' }}>
-      <p style={{ fontFamily: 'SCDream4, sans-serif', fontSize: '13px', color: 'rgba(40,43,50,0.4)' }}>{label}</p>
+    <div
+      className={`${height} bg-white rounded-2xl p-6 flex flex-col justify-between animate-pulse`}
+      style={{ border: '1px solid rgba(40,43,50,0.08)' }}
+    >
+      <p
+        style={{
+          fontFamily: 'SCDream4, sans-serif',
+          fontSize: '13px',
+          color: 'rgba(40,43,50,0.4)',
+        }}
+      >
+        {label}
+      </p>
       <div className="space-y-3">
         <div className="h-3 bg-gray-100 rounded-full w-3/4" />
         <div className="h-3 bg-gray-100 rounded-full w-1/2" />
@@ -139,3 +217,5 @@ function SkeletonCard({ label, height }: { label: string; height: string }) {
     </div>
   )
 }
+
+

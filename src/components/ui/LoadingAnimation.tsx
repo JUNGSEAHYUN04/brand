@@ -10,7 +10,8 @@ const TIPS = [
   '키워드에서 톤앤매너, 컬러, 폰트가 자동으로 결정돼요.',
 ]
 
-export default function LoadingAnimation() {
+// 💡 props로 isFadingOut을 받습니다 (기본값 false)
+export default function LoadingAnimation({ isFadingOut = false }) {
   const [tipIdx, setTipIdx] = useState(0)
   const [visible, setVisible] = useState(true)
 
@@ -26,40 +27,54 @@ export default function LoadingAnimation() {
   }, [])
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      background: '#fff',
-      textAlign: 'center',
-      gap: '20px',
-      marginTop: '-40px',
-    }}>
-      <h1 style={{
-        fontFamily: 'Oswald-SemiBold, sans-serif',
-        fontSize: '64px',
-        fontWeight: 600,
-        color: '#282B32',
-        lineHeight: 1,
-      }}>
-        LOADING
-      </h1>
+    <>
+      {/* 💡 컴포넌트가 처음 나타날 때 스르륵 나타나는 애니메이션 정의 */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
 
-      <p style={{
-        fontFamily: 'SCDream4, sans-serif',
-        fontSize: '16px',
-        color: 'rgba(40,43,50,0.5)',
-        lineHeight: '1.65',
-        whiteSpace: 'nowrap',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(8px)',
-        transition: 'opacity 0.5s, transform 0.5s',
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        background: '#fff',
+        textAlign: 'center',
+        gap: '20px',
+        marginTop: '-40px',
+        // 💡 Enter 애니메이션 및 Exit 투명도 전환 속성 추가
+        animation: 'fadeIn 0.5s ease-in-out',
+        opacity: isFadingOut ? 0 : 1,
+        transition: 'opacity 0.5s ease-in-out',
       }}>
-        <span style={{ fontFamily: 'SCDream5, sans-serif', color: '#282B32' }}>TIP :</span>{' '}
-        {TIPS[tipIdx]}
-      </p>
-    </div>
+        <h1 style={{
+          fontFamily: 'Oswald-SemiBold, sans-serif',
+          fontSize: '64px',
+          fontWeight: 600,
+          color: '#282B32',
+          lineHeight: 1,
+        }}>
+          LOADING
+        </h1>
+
+        <p style={{
+          fontFamily: 'SCDream4, sans-serif',
+          fontSize: '16px',
+          color: 'rgba(40,43,50,0.5)',
+          lineHeight: '1.65',
+          whiteSpace: 'nowrap',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(8px)',
+          transition: 'opacity 0.5s, transform 0.5s',
+        }}>
+          <span style={{ fontFamily: 'SCDream5, sans-serif', color: '#282B32' }}>TIP :</span>{' '}
+          {TIPS[tipIdx]}
+        </p>
+      </div>
+    </>
   )
 }
